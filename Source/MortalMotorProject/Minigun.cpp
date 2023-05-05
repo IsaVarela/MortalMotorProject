@@ -117,9 +117,9 @@ void AMinigun::RotateTowardsTarget(float deltaTime)
 
 
 	//Lerp to new rotation instead of snapping to it
-	FRotator NewRotation = FMath::Lerp(TurretBody->GetRelativeRotation(), TargetRotation, TurretRotationSpeed * deltaTime);
+	FRotator NewRotation = FMath::Lerp(TurretBody->GetComponentRotation(), TargetRotation, TurretRotationSpeed * deltaTime);
 
 	// Set the actor's rotation
-	TurretBody->SetRelativeRotation(NewRotation);
+	TurretBody->SetWorldRotation(NewRotation);
 }
 
