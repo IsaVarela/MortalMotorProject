@@ -12,6 +12,5 @@ APlayerMotorCar::APlayerMotorCar()
 
 void APlayerMotorCar::HandleGoldCollected()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Gold Collected"));
 	GoldAmount++;
 }

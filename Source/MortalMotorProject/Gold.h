@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/TimelineComponent.h"
 #include "Gold.generated.h"
+
+class UCurveFloat;
 
 // Delegate signature
 DECLARE_DELEGATE(FOnGoldCollectedSignature)
@@ -21,24 +24,42 @@ public:
 	static FOnGoldCollectedSignature s_OnGoldCollected;
 
 protected:
-	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Timeline")
+	UCurveFloat* CurveFloat;
+
+	FTimeline CurveFTimeline;
+
+	FVector StartLoc;
+	FVector EndLoc;
+	AActor* Player;
 
 private:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* GoldMesh;
 
+	UPROPERTY(EditDefaultsOnly)
+	float AttractionSpeedMult = 0.7f;
+
+	UFUNCTION()
+	void TimelineProgress(float val);
+
+	UFUNCTION()
+	void TimeLineFinish();
+
+	void OnGoldCollected();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-	void OnGoldCollected();
 
 	UFUNCTION(BlueprintCallable)
-	void AttractTowardsPlayer(const AActor* playerActor);
-
+	void AttractTowardsPlayer(AActor* playerActor);
 
 	
+
 };
