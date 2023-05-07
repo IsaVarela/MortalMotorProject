@@ -77,11 +77,10 @@ void AMinigun::ScanForTarget()
 	);
 	
 	//For testing, see the radius
-	DrawDebugSphere(GetWorld(), TurretBody->GetComponentLocation(), Radius, 16, FColor::Red, false, 1.f);
+	//DrawDebugSphere(GetWorld(), TurretBody->GetComponentLocation(), Radius, 16, FColor::Red, false, 1.f);
 
 	if (hit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("WORKS"));
 		Target = Outhit.GetActor();
 	}
 }
@@ -89,7 +88,7 @@ void AMinigun::ScanForTarget()
 void AMinigun::ValidateTarget()
 {
 	//if the target becomes null or dead
-	if (Target == nullptr) { UE_LOG(LogTemp, Warning, TEXT("Became Null")); return; }
+	if (Target == nullptr) { /*UE_LOG(LogTemp, Warning, TEXT("Became Null"));*/ return; }
 
 	//calculate distance between gun and target
 	float Distance = this->GetDistanceTo(Target);
