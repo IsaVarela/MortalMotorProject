@@ -11,6 +11,7 @@ AMinigun::AMinigun():
 	PrimaryActorTick.bCanEverTick = true;
 
 	TurretBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MiniGunBody"));
+	TurretBody->SetupAttachment(RootComponent);
 
 	//SetUp traceparams
 	TraceParams = FCollisionQueryParams();
