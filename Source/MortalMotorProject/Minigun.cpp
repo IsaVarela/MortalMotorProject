@@ -88,7 +88,7 @@ void AMinigun::ScanForTarget()
 void AMinigun::ValidateTarget()
 {
 	//if the target becomes null or dead
-	if (Target == nullptr) { /*UE_LOG(LogTemp, Warning, TEXT("Became Null"));*/ return; }
+	if (Target == nullptr) { return; }
 
 	//calculate distance between gun and target
 	float Distance = this->GetDistanceTo(Target);
@@ -97,7 +97,6 @@ void AMinigun::ValidateTarget()
 	if (Distance > Radius)
 	{
 		Target = nullptr;
-		UE_LOG(LogTemp, Warning, TEXT("TOO FAR"));
 	}
 	
 }
