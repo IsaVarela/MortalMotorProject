@@ -48,7 +48,7 @@ private:
 	//Trace variables
 	FCollisionQueryParams TraceParams;
 	FCollisionShape SweepSphere;
-	FVector offset;
+	FVector m_offset;
 	FHitResult Outhit;
 
 

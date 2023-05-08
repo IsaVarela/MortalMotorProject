@@ -1,26 +1,25 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "GoldCollector.h"
+#include "Gold.h"
 
-// Sets default values for this component's properties
-UGoldCollector::UGoldCollector()
+UGoldCollector::UGoldCollector():
+	m_offset(FVector(0, 0, 0.1f)),
+	m_searchTimer(0.f)
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	SweepSphere = FCollisionShape::MakeSphere(Radius);
+	TraceParams = FCollisionQueryParams();
+	TraceParams.bTraceComplex = false;
+	TraceParams.bReturnPhysicalMaterial = false;
+	TraceParams.AddIgnoredActor(GetOwner());
 }
 
 
-// Called when the game starts
 void UGoldCollector::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -28,7 +27,48 @@ void UGoldCollector::BeginPlay()
 void UGoldCollector::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (m_searchTimer >= SEARCH_TIME)
+	{
+		bool hit = SearchForNearGold();
 
-	// ...
+		if (hit)
+		{
+			MoveAllGoldToPlayer();
+		}
+
+		m_searchTimer = 0.f;
+	}
+
+	m_searchTimer += DeltaTime;
+}
+
+void UGoldCollector::MoveAllGoldToPlayer()
+{
+	for (const FHitResult hitObj : OutHits)
+	{
+		AGold* Gold = Cast<AGold>(hitObj.GetActor());
+		if (Gold)
+		{
+			Gold->AttractTowardsPlayer(GetOwner());
+		}
+	}
+}
+
+bool UGoldCollector::SearchForNearGold()
+{
+	bool hit = GetWorld()->SweepMultiByChannel
+	(
+		OutHits,
+		GetOwner()->GetActorLocation(),
+		GetOwner()->GetActorLocation() + m_offset,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		SweepSphere,
+		TraceParams
+	);
+
+
+
+	return hit;
 }
 
