@@ -19,7 +19,7 @@ AMinigun::AMinigun():
 	TraceParams.bReturnPhysicalMaterial = false;
 	TraceParams.AddIgnoredActor(this);
 	SweepSphere = FCollisionShape::MakeSphere(Radius);
-	offset = FVector(0, 0, 0.1f);
+	m_offset = FVector(0, 0, 0.1f);
 }
 
 // Called when the game starts or when spawned
@@ -70,7 +70,7 @@ void AMinigun::ScanForTarget()
 	(
 		Outhit,
 		TurretBody->GetComponentLocation(),
-		TurretBody->GetComponentLocation() + offset,
+		TurretBody->GetComponentLocation() + m_offset,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel1,
 		SweepSphere,

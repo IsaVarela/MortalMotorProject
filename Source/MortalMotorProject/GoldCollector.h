@@ -24,5 +24,19 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	void MoveAllGoldToPlayer();
+
+
+private:
+	FVector m_offset;
+	FCollisionShape SweepSphere;
+	FCollisionQueryParams TraceParams;
+	float const SEARCH_TIME = 1.f;
+	float m_searchTimer;
+	TArray<FHitResult> OutHits;
+
+	bool SearchForNearGold();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	float Radius = 3200.f;
 };
