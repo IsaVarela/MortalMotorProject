@@ -13,4 +13,5 @@ APlayerMotorCar::APlayerMotorCar()
 void APlayerMotorCar::HandleGoldCollected()
 {
 	GoldAmount++;
+	TestGoldFunc(GoldAmount);
 }

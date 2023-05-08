@@ -17,10 +17,14 @@ class MORTALMOTORPROJECT_API APlayerMotorCar : public AWheeledVehiclePawn
 public:
 	APlayerMotorCar();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void TestGoldFunc(int goldamount);
+
 private:
 	void HandleGoldCollected();
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadWrite,VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	int GoldAmount;
+
 	
 };
