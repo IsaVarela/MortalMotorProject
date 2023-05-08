@@ -26,9 +26,6 @@ AMinigun::AMinigun():
 void AMinigun::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//UE_LOG(LogTemp, Warning, TEXT("WORKS"));
-	
 }
 
 // Called every frame
@@ -77,8 +74,6 @@ void AMinigun::ScanForTarget()
 		TraceParams
 	);
 	
-	//For testing, see the radius
-	//DrawDebugSphere(GetWorld(), TurretBody->GetComponentLocation(), Radius, 16, FColor::Red, false, 1.f);
 
 	if (hit)
 	{

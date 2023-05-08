@@ -26,7 +26,6 @@ void AGold::BeginPlay()
 		TimeLineProgressDel.BindUFunction(this, FName("TimelineProgress"));
 		CurveFTimeline.AddInterpFloat(CurveFloat, TimeLineProgressDel);
 		CurveFTimeline.SetLooping(false);
-		CurveFTimeline.SetTimelineLength(1.f);
 
 		//Set the function to be called when the timeline finishes
 		FOnTimelineEvent TimelineFinishedFunction;
