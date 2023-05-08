@@ -59,7 +59,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttractTowardsPlayer(AActor* playerActor);
-
-	
-
 };
