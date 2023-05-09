@@ -17,11 +17,16 @@ void APlayerMotorCar::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//creat the Widget Ui based of the WidgetObject subclass
 	PlayerUI = CreateWidget<UPlayerUI>(GetWorld(), WidgetObject);
+	//add the created UI to the viewport
 	PlayerUI->AddToViewport();
 	
 }
 
+//This function increments the gold and aslo retreives the the exp value that 
+//The player should get for it. It increments the level if needed and send the info forward via the delegate
+//To the UI to update the progress bar
 void APlayerMotorCar::HandleGoldCollected()
 {
 	GoldAmount++;
