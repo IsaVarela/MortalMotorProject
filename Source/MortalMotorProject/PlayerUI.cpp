@@ -11,9 +11,15 @@ void UPlayerUI::NativeConstruct()
 	{
 		Player->OnGoldCollectedDelegate.BindUObject(this, &UPlayerUI::UpdateProgressBar);
 	}
+
+	ProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("ProgressExp")));
 }
 
 void UPlayerUI::UpdateProgressBar(float val)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%f"), val);
+	if (ProgressBar)
+	{
+		val = FMath::Clamp(val, 0, 1);
+		ProgressBar->SetPercent(val);
+	}
 }

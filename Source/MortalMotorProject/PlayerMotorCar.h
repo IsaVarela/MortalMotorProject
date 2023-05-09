@@ -18,9 +18,6 @@ class MORTALMOTORPROJECT_API APlayerMotorCar : public AWheeledVehiclePawn
 public:
 	APlayerMotorCar();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void TestGoldFunc(int goldamount);
-
 	FOnGoldCollected OnGoldCollectedDelegate;
 
 
@@ -33,10 +30,17 @@ private:
 	UPROPERTY(BlueprintReadWrite,VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	int GoldAmount;
 
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* ExpCurveFloat;
+
+	UPROPERTY(VisibleAnywhere)
+	int Level;
+
 	UPlayerUI* PlayerUI;
 
 	UPROPERTY(BlueprintReadWrite,meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UPlayerUI> WidgetObject;
+
 
 	
 };
