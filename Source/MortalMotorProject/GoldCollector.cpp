@@ -27,12 +27,16 @@ void UGoldCollector::BeginPlay()
 void UGoldCollector::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	//Search for near-by gold every SEARCH_TIME
 	if (m_searchTimer >= SEARCH_TIME)
 	{
+		//Cast sphere and check if gold is around
 		bool hit = SearchForNearGold();
 
 		if (hit)
 		{
+			//if at least one gold was hit, move towards the player
 			MoveAllGoldToPlayer();
 		}
 
@@ -49,11 +53,14 @@ void UGoldCollector::MoveAllGoldToPlayer()
 		AGold* Gold = Cast<AGold>(hitObj.GetActor());
 		if (Gold)
 		{
+			//per gold, move it towards the player
 			Gold->AttractTowardsPlayer(GetOwner());
 		}
 	}
 }
 
+//The actual casting of sphere to search for gold
+//The ECC_GameTraceChannel2 only casts a channel "Collectables" and for now, only Gold is responding to it
 bool UGoldCollector::SearchForNearGold()
 {
 	bool hit = GetWorld()->SweepMultiByChannel
