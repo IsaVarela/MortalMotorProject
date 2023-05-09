@@ -5,14 +5,13 @@
 #include "Gold.h"
 #include "PlayerUI.h"
 
-APlayerMotorCar::APlayerMotorCar()
-	:GoldAmount(0)
+APlayerMotorCar::APlayerMotorCar() :
+	GoldAmount(0),
+	Level(0)
 {
 	AGold::s_OnGoldCollected.BindUObject(this, &APlayerMotorCar::HandleGoldCollected);
 
 }
-
-
 
 void APlayerMotorCar::BeginPlay()
 {
@@ -26,6 +25,12 @@ void APlayerMotorCar::BeginPlay()
 void APlayerMotorCar::HandleGoldCollected()
 {
 	GoldAmount++;
-	OnGoldCollectedDelegate.ExecuteIfBound(GoldAmount);
+
+	if (ExpCurveFloat == nullptr) { return; }
+	float currentValue = ExpCurveFloat->GetFloatValue(GoldAmount);
+	Level = FMath::FloorToInt(currentValue);
+	float finalValue = currentValue - Level;
+
+	OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
 }
 
