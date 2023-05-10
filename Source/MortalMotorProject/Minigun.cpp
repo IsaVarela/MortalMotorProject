@@ -11,6 +11,7 @@ AMinigun::AMinigun():
 	PrimaryActorTick.bCanEverTick = true;
 
 	TurretBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MiniGunBody"));
+	TurretBody->SetupAttachment(RootComponent);
 
 	//SetUp traceparams
 	TraceParams = FCollisionQueryParams();
@@ -18,16 +19,13 @@ AMinigun::AMinigun():
 	TraceParams.bReturnPhysicalMaterial = false;
 	TraceParams.AddIgnoredActor(this);
 	SweepSphere = FCollisionShape::MakeSphere(Radius);
-	offset = FVector(0, 0, 0.1f);
+	m_offset = FVector(0, 0, 0.1f);
 }
 
 // Called when the game starts or when spawned
 void AMinigun::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//UE_LOG(LogTemp, Warning, TEXT("WORKS"));
-	
 }
 
 // Called every frame
@@ -69,19 +67,16 @@ void AMinigun::ScanForTarget()
 	(
 		Outhit,
 		TurretBody->GetComponentLocation(),
-		TurretBody->GetComponentLocation() + offset,
+		TurretBody->GetComponentLocation() + m_offset,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel1,
 		SweepSphere,
 		TraceParams
 	);
 	
-	//For testing, see the radius
-	DrawDebugSphere(GetWorld(), TurretBody->GetComponentLocation(), Radius, 16, FColor::Red, false, 1.f);
 
 	if (hit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("WORKS"));
 		Target = Outhit.GetActor();
 	}
 }
@@ -89,7 +84,7 @@ void AMinigun::ScanForTarget()
 void AMinigun::ValidateTarget()
 {
 	//if the target becomes null or dead
-	if (Target == nullptr) { UE_LOG(LogTemp, Warning, TEXT("Became Null")); return; }
+	if (Target == nullptr) { return; }
 
 	//calculate distance between gun and target
 	float Distance = this->GetDistanceTo(Target);
@@ -98,7 +93,6 @@ void AMinigun::ValidateTarget()
 	if (Distance > Radius)
 	{
 		Target = nullptr;
-		UE_LOG(LogTemp, Warning, TEXT("TOO FAR"));
 	}
 	
 }
