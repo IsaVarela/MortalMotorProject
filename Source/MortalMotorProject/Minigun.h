@@ -25,6 +25,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 	AActor* Target;
 
+	//TEST REMOVE
+	UFUNCTION(BlueprintImplementableEvent)
+	void Shoot();
+
 public:	
 
 	virtual void Tick(float DeltaTime) override;
