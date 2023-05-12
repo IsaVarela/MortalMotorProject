@@ -28,6 +28,7 @@ void AMinigun::BeginPlay()
 	Super::BeginPlay();
 }
 
+
 // Called every frame
 void AMinigun::Tick(float DeltaTime)
 {
@@ -54,6 +55,7 @@ void AMinigun::Tick(float DeltaTime)
 		RotateTowardsTarget(DeltaTime);
 
 		//Shoot Target
+		Shoot();
 
 		m_searchTimer += DeltaTime;
 	}
