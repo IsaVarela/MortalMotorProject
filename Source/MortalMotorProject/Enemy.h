@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IDamageable.h"
 #include "GameFramework/Pawn.h"
 #include "Enemy.generated.h"
 
 UCLASS()
-class MORTALMOTORPROJECT_API AEnemy : public APawn
+class MORTALMOTORPROJECT_API AEnemy : public APawn, public IIDamageable
 {
 	GENERATED_BODY()
 
@@ -23,7 +24,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void TakeDamge(float damage) override;
 
 };
