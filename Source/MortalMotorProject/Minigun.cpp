@@ -3,6 +3,7 @@
 
 #include "Minigun.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "IDamageable.h"
 
 // Sets default values
 AMinigun::AMinigun():
@@ -27,7 +28,6 @@ void AMinigun::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
 
 // Called every frame
 void AMinigun::Tick(float DeltaTime)
@@ -117,5 +117,17 @@ void AMinigun::RotateTowardsTarget(float deltaTime)
 
 	// Set the actor's rotation
 	TurretBody->SetWorldRotation(NewRotation);
+}
+
+void AMinigun::Shoot_Implementation()
+{
+	if (Target == nullptr) { return; }
+
+	IIDamageable* Damageable = Cast<IIDamageable>(Target);
+
+	if (Damageable)
+	{
+		Damageable->TakeDamge(Damage);
+	}
 }
 

@@ -26,7 +26,7 @@ protected:
 	AActor* Target;
 
 	//TEST REMOVE
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintNativeEvent)
 	void Shoot();
 
 public:	
@@ -45,6 +45,9 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float TurretRotationSpeed = 10.f;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float Damage = 10.f;
 
 	float m_searchTimer;
 	float const SEARCH_TIME = 2.f;
