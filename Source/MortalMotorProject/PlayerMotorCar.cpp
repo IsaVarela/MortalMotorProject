@@ -4,6 +4,12 @@
 #include "PlayerMotorCar.h"
 #include "Gold.h"
 #include "PlayerUI.h"
+#include "ChaosWheeledVehicleMovementComponent.h" 
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+
 
 APlayerMotorCar::APlayerMotorCar() :
 	GoldAmount(0),
@@ -21,7 +27,25 @@ void APlayerMotorCar::BeginPlay()
 	PlayerUI = CreateWidget<UPlayerUI>(GetWorld(), WidgetObject);
 	//add the created UI to the viewport
 	PlayerUI->AddToViewport();
-	
+
+}
+
+void APlayerMotorCar::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString::Printf(TEXT("Throttle: %f"), GetVehicleMovementComponent()->GetThrottleInput()));
+
+	CameraRotation();
+}
+
+void APlayerMotorCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	// Bind different actions to the desired keys in the editor	
+	PlayerInputComponent->BindAction("Forward", IE_Pressed, this, &APlayerMotorCar::Accelerate);
+	PlayerInputComponent->BindAction("Break", IE_Pressed, this, &APlayerMotorCar::Break);
+	PlayerInputComponent->BindAxis("Steer", this, &APlayerMotorCar::Steer);
 }
 
 //This function increments the gold and aslo retreives the the exp value that 
@@ -38,5 +62,60 @@ void APlayerMotorCar::HandleGoldCollected()
 
 	OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
 }
+
+void APlayerMotorCar::CameraRotation()
+{
+    FRotator DefaultRotation;
+    float LerpSpeed = 0.4f;
+    float MouseX, MouseY;
+
+    // Get the mouse movement delta from the player's input  
+    GetWorld()->GetFirstPlayerController()->GetInputMouseDelta(MouseX, MouseY);
+
+    // Catch the spring arm component
+    USpringArmComponent* SpringArm = FindComponentByClass<USpringArmComponent>();
+
+    if (FMath::Abs(MouseX) < 0.1f && FMath::Abs(MouseY) < 0.1f)
+    {
+        FRotator Target = DefaultRotation;
+        FRotator CurrentRotation = SpringArm->GetRelativeRotation();
+        CurrentRotation = FMath::RInterpTo(CurrentRotation, Target, 1.0f, LerpSpeed);
+        SpringArm->SetRelativeRotation(CurrentRotation);
+    }
+    else
+    {
+        // Get the current rotation of the SpringArm
+        FRotator CurrentRotation = SpringArm->GetRelativeRotation();
+
+        // Update the Z rotation based on the mouse movement  
+        float RotationSpeed = 0.8f;
+        CurrentRotation.Yaw += MouseX * RotationSpeed;
+
+        // Set the new rotation of the SpringArm
+        SpringArm->SetRelativeRotation(CurrentRotation);
+    }
+}
+
+void APlayerMotorCar::Accelerate()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("FORWARD IS PRESSED"));
+    GetVehicleMovementComponent()->SetThrottleInput(1);
+}
+
+void APlayerMotorCar::Break()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("BREAK IS PRESSED"));
+    GetVehicleMovement()->SetBrakeInput(1);
+}
+
+void APlayerMotorCar::Steer(float x)
+{
+    if (GetVehicleMovementComponent()->GetSteeringInput() != 0) {
+        GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString::Printf(TEXT("Steer: %f"), GetVehicleMovementComponent()->GetSteeringInput()));
+    }
+
+    GetVehicleMovement()->SetSteeringInput(x);
+}
+
 
  
