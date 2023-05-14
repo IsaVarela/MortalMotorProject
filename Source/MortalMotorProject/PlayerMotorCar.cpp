@@ -39,3 +39,4 @@ void APlayerMotorCar::HandleGoldCollected()
 	OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
 }
 
+ 

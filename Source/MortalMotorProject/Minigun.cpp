@@ -7,7 +7,8 @@
 
 // Sets default values
 AMinigun::AMinigun():
-	m_searchTimer(0.f)
+	m_searchTimer(0.f),
+	m_attackTimer(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -54,9 +55,14 @@ void AMinigun::Tick(float DeltaTime)
 		//Rotate towards target
 		RotateTowardsTarget(DeltaTime);
 
-		//Shoot Target
-		Shoot();
-
+		if (m_attackTimer >= FireRate && Target)
+		{
+			//Shoot Target
+			Shoot();
+			m_attackTimer = 0.f;
+		}
+		
+		m_attackTimer += DeltaTime;
 		m_searchTimer += DeltaTime;
 	}
 
@@ -125,9 +131,14 @@ void AMinigun::Shoot_Implementation()
 
 	IIDamageable* Damageable = Cast<IIDamageable>(Target);
 
-	if (Damageable)
+	if (Damageable && Damageable->IsAlive())
 	{
 		Damageable->TakeDamge(Damage);
+	}
+
+	if (!Damageable->IsAlive())
+	{
+		Target = nullptr;
 	}
 }
 

@@ -26,4 +26,19 @@ public:
 
 	virtual void TakeDamge(float damage) override;
 
+	bool IsAlive() const override { return HealthPoints > 0; }
+
+	UPROPERTY(EditDefaultsOnly)
+	UParticleSystemComponent* HitParticlesComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMeshComponent* Body;
+
+private:
+
+	UPROPERTY(EditDefaultsOnly)
+	float HealthPoints = 100.f;
+
+	
+
 };
