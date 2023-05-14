@@ -23,9 +23,18 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
+
+	class UChaosVehicleMovementComponent* VehicleMovementComponent;
+
 	void HandleGoldCollected();
+	void Accelerate();
+	void Break();
+	void Steer(float x);
+	void CameraRotation();
 
 	UPROPERTY(BlueprintReadWrite,VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	int GoldAmount;
