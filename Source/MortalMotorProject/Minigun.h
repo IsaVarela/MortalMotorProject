@@ -22,9 +22,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UStaticMeshComponent* TurretBody;
 
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
-	AActor* Target;
-
 	//TEST REMOVE
 	UFUNCTION(BlueprintNativeEvent)
 	void Shoot();
@@ -40,16 +37,22 @@ private:
 
 private:
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	AActor* Target;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting-Params")
 	float Radius = 3000.f;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting-Params")
 	float TurretRotationSpeed = 10.f;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting-Params")
 	float Damage = 10.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Shooting-Params")
+	float FireRate = 0.5f;
+
 	float m_searchTimer;
+	float m_attackTimer;
 	float const SEARCH_TIME = 2.f;
 
 	//Trace variables
