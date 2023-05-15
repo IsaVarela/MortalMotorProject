@@ -62,7 +62,7 @@ void APlayerMotorCar::HandleGoldCollected()
 
 	OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
 }
-
+// this function will allow the player to rotate the camera without re adjusting to a default position
 void APlayerMotorCar::CameraRotation()
 {
     FRotator DefaultRotation;
@@ -73,16 +73,7 @@ void APlayerMotorCar::CameraRotation()
     GetWorld()->GetFirstPlayerController()->GetInputMouseDelta(MouseX, MouseY);
 
     // Catch the spring arm component
-    USpringArmComponent* SpringArm = FindComponentByClass<USpringArmComponent>();
-
-    if (FMath::Abs(MouseX) < 0.1f && FMath::Abs(MouseY) < 0.1f)
-    {
-        FRotator Target = DefaultRotation;
-        FRotator CurrentRotation = SpringArm->GetRelativeRotation();
-        CurrentRotation = FMath::RInterpTo(CurrentRotation, Target, 1.0f, LerpSpeed);
-        SpringArm->SetRelativeRotation(CurrentRotation);
-    }
-    else
+    USpringArmComponent* SpringArm = FindComponentByClass<USpringArmComponent>(); 
     {
         // Get the current rotation of the SpringArm
         FRotator CurrentRotation = SpringArm->GetRelativeRotation();
