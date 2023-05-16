@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "IDamageable.h"
 #include "GameFramework/Pawn.h"
+#include "Components/ArrowComponent.h"
 #include "Enemy.generated.h"
+
 
 UCLASS()
 class MORTALMOTORPROJECT_API AEnemy : public APawn, public IIDamageable
@@ -33,6 +35,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* Body;
+
+	UPROPERTY(EditDefaultsOnly)
+		UArrowComponent* Arrow;
 
 private:
 

@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/ArrowComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -19,7 +20,10 @@ AEnemy::AEnemy()
 	HitParticlesComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HitEffectComponent"));
 	HitParticlesComponent->SetupAttachment(RootComponent);
 	HitParticlesComponent->bAutoActivate = false;
-	
+
+	// this helps to set the proper orientation of the mesh in the editor
+	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	Arrow->SetupAttachment(RootComponent);
 	
 }
 

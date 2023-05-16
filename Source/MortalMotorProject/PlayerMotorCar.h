@@ -29,6 +29,7 @@ protected:
 private:
 
 	class UChaosVehicleMovementComponent* VehicleMovementComponent;
+	class USpringArmComponent* SpringArm;
 
 	void HandleGoldCollected();
 	void Accelerate();

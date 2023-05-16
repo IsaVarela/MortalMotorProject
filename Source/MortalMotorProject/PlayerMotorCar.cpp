@@ -16,7 +16,7 @@ APlayerMotorCar::APlayerMotorCar() :
 	Level(0)
 {
 	AGold::s_OnGoldCollected.BindUObject(this, &APlayerMotorCar::HandleGoldCollected);
-
+	
 }
 
 void APlayerMotorCar::BeginPlay()
@@ -27,6 +27,9 @@ void APlayerMotorCar::BeginPlay()
 	PlayerUI = CreateWidget<UPlayerUI>(GetWorld(), WidgetObject);
 	//add the created UI to the viewport
 	PlayerUI->AddToViewport();
+
+	// Catch the spring arm component
+	SpringArm = FindComponentByClass<USpringArmComponent>();
 
 }
 
@@ -72,8 +75,6 @@ void APlayerMotorCar::CameraRotation()
     // Get the mouse movement delta from the player's input  
     GetWorld()->GetFirstPlayerController()->GetInputMouseDelta(MouseX, MouseY);
 
-    // Catch the spring arm component
-    USpringArmComponent* SpringArm = FindComponentByClass<USpringArmComponent>(); 
     {
         // Get the current rotation of the SpringArm
         FRotator CurrentRotation = SpringArm->GetRelativeRotation();
