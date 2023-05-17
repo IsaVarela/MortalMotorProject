@@ -22,9 +22,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UStaticMeshComponent* TurretBody;
 
-	//TEST REMOVE
-	UFUNCTION(BlueprintNativeEvent)
-	void Shoot();
 
 public:	
 
@@ -34,6 +31,8 @@ private:
 	void ScanForTarget();
 	void ValidateTarget();
 	void RotateTowardsTarget(float deltaTime);
+	void Shoot();
+	void StopShoot();
 
 private:
 
@@ -50,6 +49,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shooting-Params")
 	float FireRate = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "VFX")
+	UParticleSystemComponent* ShootVfxComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "VFX")
+	UParticleSystemComponent* SmokeVfxComponent;
 
 	float m_searchTimer;
 	float m_attackTimer;
