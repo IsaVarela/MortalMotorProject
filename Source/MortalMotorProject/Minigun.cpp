@@ -3,6 +3,7 @@
 
 #include "Minigun.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "IDamageable.h"
 
 // Sets default values
@@ -22,15 +23,18 @@ AMinigun::AMinigun():
 	TraceParams.AddIgnoredActor(this);
 	SweepSphere = FCollisionShape::MakeSphere(Radius);
 	m_offset = FVector(0, 0, 0.1f);
+
+	//VFX
+	ShootVfxComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootVFX"));
+	ShootVfxComponent->bAutoActivate = false;
+	ShootVfxComponent->SetupAttachment(TurretBody);
 }
 
-// Called when the game starts or when spawned
 void AMinigun::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-// Called every frame
 void AMinigun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -101,6 +105,7 @@ void AMinigun::ValidateTarget()
 	if (Distance > Radius)
 	{
 		Target = nullptr;
+		StopShoot();
 	}
 	
 }
@@ -125,11 +130,12 @@ void AMinigun::RotateTowardsTarget(float deltaTime)
 	TurretBody->SetWorldRotation(NewRotation);
 }
 
-void AMinigun::Shoot_Implementation()
+void AMinigun::Shoot()
 {
 	if (Target == nullptr) { return; }
 
 	IIDamageable* Damageable = Cast<IIDamageable>(Target);
+	ShootVfxComponent->Activate();
 
 	if (Damageable && Damageable->IsAlive())
 	{
@@ -139,6 +145,12 @@ void AMinigun::Shoot_Implementation()
 	if (!Damageable->IsAlive())
 	{
 		Target = nullptr;
+		StopShoot();
 	}
+}
+
+void AMinigun::StopShoot()
+{
+	ShootVfxComponent->Deactivate();
 }
 
