@@ -15,20 +15,23 @@ class MORTALMOTORPROJECT_API AEnemyAIController : public AAIController
 	GENERATED_BODY()
 
 public:
-	AEnemyAIController();
-	void BeginPlay() override;
-	void OnPossess(APawn* const pawn) override;
-	
+	AEnemyAIController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
+	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* const pawn) override;
+	UBlackboardComponent* get_blackboard() const;
+
+	// executes logic
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+		class UBehaviorTreeComponent* BehaviorTreeComponent;
+	// defines logic
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+		class UBehaviorTree* BehaviorTree;
+
+	UPROPERTY()
+	class UBlackboardComponent* BlackboardComponent;
 
 private:
 
-	// executes logic
-	UPROPERTY(EditInstanceOnly)
-		class UBehaviorTreeComponent* BehaviorTreeComponent;
-	// defines logic
-	UPROPERTY(EditInstanceOnly)
-		class UBehaviorTree* BehaviorTree;
-
-		class UBlackBoardComponent* BlackBoard;
+	
 	
 };
