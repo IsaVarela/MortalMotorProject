@@ -66,7 +66,7 @@ void APlayerMotorCar::HandleGoldCollected()
 	//if the player leveled up
 	if (Level > levelTemp)
 	{
-		OnLevelUpDelegate.ExecuteIfBound();
+		OnLevelUpDelegate.Broadcast();
 	}
 
 	float finalValue = currentValue - Level;

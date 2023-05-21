@@ -8,8 +8,8 @@
 #include "PlayerMotorCar.generated.h"
 
 // Delegate signature
-DECLARE_DELEGATE_OneParam(FOnGoldCollected,float)
-DECLARE_DELEGATE(FOnLevelUp)
+DECLARE_DELEGATE_OneParam(FOnGoldCollected, float);
+DECLARE_MULTICAST_DELEGATE(FOnLevelUp);
 
 UCLASS()
 class MORTALMOTORPROJECT_API APlayerMotorCar : public AWheeledVehiclePawn
