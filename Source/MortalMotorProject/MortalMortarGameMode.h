@@ -31,6 +31,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ActivateSkillUI();
 
+	//Core Skills
 	UFUNCTION(BlueprintImplementableEvent)
 	void ActivateMinigun();
 
@@ -40,20 +41,24 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ActivateFlameThrower();
 
-	UPROPERTY()
-	FCoreSkill CoreSkill_1;
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivateMines();
 
-	UPROPERTY()
-	FCoreSkill CoreSkill_2;
+	//Generic Skills
+	UFUNCTION(BlueprintImplementableEvent)
+	void GenericSkillTemp1();
 
-	UPROPERTY()
-	FCoreSkill CoreSkill_3;
+	UFUNCTION(BlueprintImplementableEvent)
+	void GenericSkillTemp2();
 
 	UPROPERTY()
 	TArray<FCoreSkill> m_AllCoreSkills;
 
-	FCoreSkill* GetRandomCoreSkillFromList();
+	UPROPERTY()
+	TArray<FCoreSkill> m_GenericSkills;
+
+	FCoreSkill GetRandomSkill();
 
 	void AddCoreSkillToList(const FCoreSkill& newSkill);
-	void RemoveSelectedCoreSkill(FCoreSkill& SkillToRemove);
+	void RemoveSelectedCoreSkill(const FCoreSkill& SkillToRemove);
 };
