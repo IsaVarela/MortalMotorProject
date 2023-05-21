@@ -108,35 +108,22 @@ void USkillsWidget::InitSkillChoices()
 	if (!GameMode) { return; }
 
 	//for button 1
-	if (m_Btn1Text && m_Btn1)
-	{
-		int index_1 = ActiveSkills.Add(*GameMode->GetRandomCoreSkillFromList());
-		m_btn1Action = ActiveSkills[index_1].OnSkillActionDelegate;				//assign the action
-		GameMode->RemoveSelectedCoreSkill(ActiveSkills[index_1]);
-
-		m_Btn1Text->SetText(FText::FromString(ActiveSkills[index_1].SkillName)); //assign the name
-		UE_LOG(LogTemp, Warning, TEXT("button 1 init"));
-	}
+	auto temp = GameMode->GetRandomSkill();
+	//ActiveSkills.Add(temp);
+	m_btn1Action = temp.OnSkillActionDelegate;
+	m_Btn1Text->SetText(FText::FromString(temp.SkillName));
 
 	//for button 2
-	if (m_Btn2Text && m_Btn2)
-	{
-		int index_2 = ActiveSkills.Add(*GameMode->GetRandomCoreSkillFromList());
-		m_btn2Action = ActiveSkills[index_2].OnSkillActionDelegate;				//assign the action
-		GameMode->RemoveSelectedCoreSkill(ActiveSkills[index_2]);
-
-		m_Btn2Text->SetText(FText::FromString(ActiveSkills[index_2].SkillName)); //assign the name
-		UE_LOG(LogTemp, Warning, TEXT("button 2 init"));
-	}
+	auto temp2 = GameMode->GetRandomSkill();
+	//ActiveSkills.Add(temp2);
+	m_btn2Action = temp2.OnSkillActionDelegate;
+	m_Btn2Text->SetText(FText::FromString(temp2.SkillName));
 
 	//for button 3
-	if (m_Btn3Text && m_Btn3)
-	{
-		int index_3 = ActiveSkills.Add(*GameMode->GetRandomCoreSkillFromList());
-		m_btn3Action = ActiveSkills[index_3].OnSkillActionDelegate;				//assign the action
-		GameMode->RemoveSelectedCoreSkill(ActiveSkills[index_3]);
+	auto temp3 = GameMode->GetRandomSkill();
+	//ActiveSkills.Add(temp3);
+	m_btn3Action = temp3.OnSkillActionDelegate;
+	m_Btn3Text->SetText(FText::FromString(temp3.SkillName));
 
-		m_Btn3Text->SetText(FText::FromString(ActiveSkills[index_3].SkillName)); //assign the name
-		UE_LOG(LogTemp, Warning, TEXT("button 3 init"));
-	}
+	
 }
