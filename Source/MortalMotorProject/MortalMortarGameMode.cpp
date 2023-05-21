@@ -92,10 +92,6 @@ FCoreSkill AMortalMortarGameMode::GetRandomSkill()
 	return temp;
 }
 
-void AMortalMortarGameMode::AddCoreSkillToList(const FCoreSkill& newSkill)
-{
-	m_AllCoreSkills.Add(newSkill);
-}
 
 void AMortalMortarGameMode::RemoveSelectedCoreSkill(const FCoreSkill& SkillToRemove)
 {
@@ -105,4 +101,9 @@ void AMortalMortarGameMode::RemoveSelectedCoreSkill(const FCoreSkill& SkillToRem
 	{
 		m_AllCoreSkills.RemoveSingle(SkillToRemove);
 	}
+}
+
+void AMortalMortarGameMode::AddSkillsToPool(const FCoreSkill& SkillToAdd)
+{
+	m_AllCoreSkills.Add(SkillToAdd);
 }

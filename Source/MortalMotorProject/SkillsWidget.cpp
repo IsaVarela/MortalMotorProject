@@ -91,16 +91,34 @@ void USkillsWidget::InitWidget()
 void USkillsWidget::ActivateButton_1()
 {
 	m_btn1Action.ExecuteIfBound();
+	RestoreUnselectedSkills(m_btn1Action);
 }
 
 void USkillsWidget::ActivateButton_2()
 {
 	m_btn2Action.ExecuteIfBound();
+	RestoreUnselectedSkills(m_btn2Action);
 }
 
 void USkillsWidget::ActivateButton_3()
 {
 	m_btn3Action.ExecuteIfBound();
+	RestoreUnselectedSkills(m_btn3Action);
+}
+
+void USkillsWidget::RestoreUnselectedSkills(FOnSkillAction& skillAction)
+{
+	if (m_Skills.IsEmpty()) { return; }
+	
+	for (const auto ele : m_Skills)
+	{
+		if (ele.OnSkillActionDelegate.GetHandle() != skillAction.GetHandle())
+		{
+			GameMode->AddSkillsToPool(ele);
+		}
+	}
+
+	m_Skills.Empty();
 }
 
 void USkillsWidget::InitSkillChoices()
@@ -109,19 +127,36 @@ void USkillsWidget::InitSkillChoices()
 
 	//for button 1
 	auto temp = GameMode->GetRandomSkill();
-	//ActiveSkills.Add(temp);
+	m_Skills.Add(temp);
+
+	if (m_btn1Action.IsBound())
+	{
+		m_btn1Action.Unbind();
+	}
 	m_btn1Action = temp.OnSkillActionDelegate;
 	m_Btn1Text->SetText(FText::FromString(temp.SkillName));
 
 	//for button 2
 	auto temp2 = GameMode->GetRandomSkill();
-	//ActiveSkills.Add(temp2);
+	m_Skills.Add(temp2);
+
+	if (m_btn2Action.IsBound())
+	{
+		m_btn2Action.Unbind();
+	}
+
 	m_btn2Action = temp2.OnSkillActionDelegate;
 	m_Btn2Text->SetText(FText::FromString(temp2.SkillName));
 
 	//for button 3
 	auto temp3 = GameMode->GetRandomSkill();
-	//ActiveSkills.Add(temp3);
+	m_Skills.Add(temp3);
+
+	if (m_btn3Action.IsBound())
+	{
+		m_btn3Action.Unbind();
+	}
+
 	m_btn3Action = temp3.OnSkillActionDelegate;
 	m_Btn3Text->SetText(FText::FromString(temp3.SkillName));
 

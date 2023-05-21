@@ -30,5 +30,9 @@ struct MORTALMOTORPROJECT_API FCoreSkill
 		return this->SkillName != Other.SkillName;
 	}
 
-	~FCoreSkill();
+	~FCoreSkill()
+	{
+		
+	}
+
 };

@@ -59,6 +59,6 @@ public:
 
 	FCoreSkill GetRandomSkill();
 
-	void AddCoreSkillToList(const FCoreSkill& newSkill);
 	void RemoveSelectedCoreSkill(const FCoreSkill& SkillToRemove);
+	void AddSkillsToPool(const FCoreSkill& SkillToAdd);
 };
