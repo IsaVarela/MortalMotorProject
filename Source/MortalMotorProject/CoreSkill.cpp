@@ -2,8 +2,3 @@
 
 
 #include "CoreSkill.h"
-
-FCoreSkill::~FCoreSkill()
-{
-	OnSkillActionDelegate.Unbind();
-}

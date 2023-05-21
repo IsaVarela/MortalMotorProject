@@ -44,7 +44,9 @@ private:
 	FOnSkillAction m_btn2Action;
 	FOnSkillAction m_btn3Action;
 
-	TArray<FCoreSkill> ActiveSkills;
+	TArray<FCoreSkill> m_Skills;
+
+	void RestoreUnselectedSkills(FOnSkillAction& skillAction);
 
 	UFUNCTION()
 	void InitSkillChoices();
