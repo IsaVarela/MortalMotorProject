@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Enemy.h"
+#include "Components/CapsuleComponent.h"
 #include "Zombie.generated.h"
 
 /**
@@ -18,6 +19,9 @@ public:
     AZombie();
     UPROPERTY(EditDefaultsOnly)
 	USkeletalMeshComponent* Skeleton;
+
+    UPROPERTY(EditDefaultsOnly)
+        UCapsuleComponent* CapsuleComponent;
 
     virtual void Tick(float DeltaSeconds) override;
 
