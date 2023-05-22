@@ -9,10 +9,11 @@
 // Sets default values
 AMinigun::AMinigun():
 	m_searchTimer(0.f),
-	m_attackTimer(0.f)
+	m_attackTimer(0.f),
+	bHasEnabled(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	TurretBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MiniGunBody"));
 	TurretBody->SetupAttachment(RootComponent);
 
@@ -37,7 +38,9 @@ void AMinigun::BeginPlay()
 
 void AMinigun::Tick(float DeltaTime)
 {
+	if (!bHasEnabled) { return; }
 	Super::Tick(DeltaTime);
+
 
 	//IF no target
 	if (Target == nullptr)
@@ -70,6 +73,12 @@ void AMinigun::Tick(float DeltaTime)
 		m_searchTimer += DeltaTime;
 	}
 
+}
+
+void AMinigun::ShowMinigun()
+{
+	bHasEnabled = true;
+	TurretBody->SetVisibility(true);
 }
 
 void AMinigun::ScanForTarget()

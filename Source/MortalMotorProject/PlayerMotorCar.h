@@ -8,7 +8,8 @@
 #include "PlayerMotorCar.generated.h"
 
 // Delegate signature
-DECLARE_DELEGATE_OneParam(FOnGoldCollected,float)
+DECLARE_DELEGATE_OneParam(FOnGoldCollected, float);
+DECLARE_MULTICAST_DELEGATE(FOnLevelUp);
 
 UCLASS()
 class MORTALMOTORPROJECT_API APlayerMotorCar : public AWheeledVehiclePawn
@@ -19,6 +20,7 @@ public:
 	APlayerMotorCar();
 
 	FOnGoldCollected OnGoldCollectedDelegate;
+	FOnLevelUp OnLevelUpDelegate;
 
 
 protected:
@@ -37,7 +39,7 @@ private:
 	void Steer(float x);
 	void CameraRotation();
 
-	UPROPERTY(BlueprintReadWrite,VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere)
 	int GoldAmount;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

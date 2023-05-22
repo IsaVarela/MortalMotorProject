@@ -10,7 +10,7 @@
 class UCurveFloat;
 
 // Delegate signature
-DECLARE_DELEGATE(FOnGoldCollectedSignature)
+DECLARE_DELEGATE(FOnGoldCollectedSignature);
 
 UCLASS()
 class MORTALMOTORPROJECT_API AGold : public AActor

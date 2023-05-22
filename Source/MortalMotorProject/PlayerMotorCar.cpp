@@ -60,11 +60,20 @@ void APlayerMotorCar::HandleGoldCollected()
 
 	if (ExpCurveFloat == nullptr) { return; }
 	float currentValue = ExpCurveFloat->GetFloatValue(GoldAmount);
+	int levelTemp = Level;
 	Level = FMath::FloorToInt(currentValue);
+
+	//if the player leveled up
+	if (Level > levelTemp)
+	{
+		OnLevelUpDelegate.Broadcast();
+	}
+
 	float finalValue = currentValue - Level;
 
 	OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
 }
+
 // this function will allow the player to rotate the camera without re adjusting to a default position
 void APlayerMotorCar::CameraRotation()
 {
