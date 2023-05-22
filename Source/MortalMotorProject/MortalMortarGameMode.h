@@ -3,13 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CoreSkill.h"
 #include "GameFramework/GameModeBase.h"
 #include "MortalMortarGameMode.generated.h"
 
-/**
- * 
- */
+struct FCoreSkill;
+
 UCLASS()
 class MORTALMOTORPROJECT_API AMortalMortarGameMode : public AGameModeBase
 {
@@ -20,8 +18,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	APlayerController* m_PlayerController;
+	class APlayerController* m_PlayerController;
 	class APlayerMotorCar* m_Player;
+	class UUpgradesComponent* m_UpgradeComponent;
 
 	void InitAllCoreSkills();
 
@@ -32,7 +31,7 @@ public:
 	void ActivateSkillUI();
 
 	//Core Skills
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION()
 	void ActivateMinigun();
 
 	UFUNCTION(BlueprintImplementableEvent)

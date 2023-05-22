@@ -5,6 +5,9 @@
 #include "PlayerMotorCar.h"
 #include "Math/UnrealMathUtility.h"
 #include "Containers/Array.h"
+#include "UpgradesComponent.h"
+#include "CoreSkill.h"
+
 
 void AMortalMortarGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
@@ -26,8 +29,12 @@ void AMortalMortarGameMode::BeginPlay()
 		if (m_Player)
 		{
 			m_Player->OnLevelUpDelegate.AddUFunction(this, FName("ActivateSkillUI"));
+
+			m_UpgradeComponent = Cast<UUpgradesComponent>(m_Player->GetComponentByClass(UUpgradesComponent::StaticClass()));
 		}
 	}
+
+	
 }
 
 void AMortalMortarGameMode::InitAllCoreSkills()
@@ -69,6 +76,16 @@ void AMortalMortarGameMode::InitAllCoreSkills()
 
 	m_GenericSkills.Add(GenericSkill_1);
 	m_GenericSkills.Add(GenericSkill_2);
+}
+
+//----------------------Core Skill Implementations----------------------------
+void AMortalMortarGameMode::ActivateMinigun()
+{
+	/*FInputModeGameOnly InputMode;
+	m_PlayerController->SetInputMode(InputMode);
+	m_PlayerController->bShowMouseCursor = false;*/
+	
+	m_UpgradeComponent->EnableMinigun();
 }
 
 

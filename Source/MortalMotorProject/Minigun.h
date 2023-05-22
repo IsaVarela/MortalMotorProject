@@ -26,6 +26,7 @@ protected:
 public:	
 
 	virtual void Tick(float DeltaTime) override;
+	void ShowMinigun();
 
 private:
 	void ScanForTarget();
@@ -35,7 +36,7 @@ private:
 	void StopShoot();
 
 private:
-
+	bool bHasEnabled;
 	AActor* Target;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shooting-Params")
