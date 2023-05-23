@@ -29,14 +29,15 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
-
+ 
 	class UChaosVehicleMovementComponent* VehicleMovementComponent;
+	 
 	class USpringArmComponent* SpringArm;
 
 	void HandleGoldCollected();
 	void Accelerate();
 	void Break();
-	void Steer(float x);
+	void Steer(float x);	 
 	void CameraRotation();
 
 	UPROPERTY(VisibleAnywhere)
@@ -48,6 +49,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	int Level;
 
+	 
 	UPlayerUI* PlayerUI;
 
 	UPROPERTY(BlueprintReadWrite,meta = (AllowPrivateAccess = "true"))

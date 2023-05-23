@@ -28,7 +28,11 @@ public:
 
 	virtual void TakeDamge(float damage) override;
 
-	bool IsAlive() const override { return HealthPoints > 0; }
+	virtual void DestroyEnemy() override;
+
+	virtual bool IsAlive() const override { return HealthPoints > 0; }
+
+	
 
 	UPROPERTY(EditDefaultsOnly)
 	UParticleSystemComponent* HitParticlesComponent;
