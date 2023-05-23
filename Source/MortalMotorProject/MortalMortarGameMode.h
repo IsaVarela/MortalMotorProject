@@ -16,15 +16,19 @@ class MORTALMOTORPROJECT_API AMortalMortarGameMode : public AGameModeBase
 protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	class APlayerController* m_PlayerController;
 	class APlayerMotorCar* m_Player;
 	class UUpgradesComponent* m_UpgradeComponent;
 
-	void InitAllCoreSkills();
 
-	
+	TArray<TSharedPtr<FCoreSkill>> m_AllCoreSkills;
+	TArray<TSharedPtr<FCoreSkill>> m_GenericSkills;
+
+
+	void InitAllCoreSkills();
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)
@@ -50,14 +54,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void GenericSkillTemp2();
 
-	UPROPERTY()
-	TArray<FCoreSkill> m_AllCoreSkills;
+	TSharedPtr<FCoreSkill> GetRandomSkill();
 
-	UPROPERTY()
-	TArray<FCoreSkill> m_GenericSkills;
-
-	FCoreSkill GetRandomSkill();
-
-	void RemoveSelectedCoreSkill(const FCoreSkill& SkillToRemove);
-	void AddSkillsToPool(const FCoreSkill& SkillToAdd);
+	void RemoveSelectedCoreSkill(TSharedPtr <FCoreSkill> SkillToRemove);
+	void AddSkillsToPool(TSharedPtr <FCoreSkill> SkillToAdd);
 };

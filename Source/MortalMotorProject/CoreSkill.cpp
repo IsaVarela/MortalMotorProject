@@ -2,3 +2,8 @@
 
 
 #include "CoreSkill.h"
+
+const TArray<TSharedPtr<FCoreSkill>>& FCoreSkill::GetAllUpgrades() const
+{
+	return CoreSkillUpgrades;
+}
