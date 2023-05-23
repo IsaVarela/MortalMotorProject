@@ -5,10 +5,10 @@
 #include "Components/Button.h"
 #include "MortalMortarGameMode.h"
 #include "Components/TextBlock.h"
-#include "PlayerMotorCar.h"
 
 void USkillsWidget::NativeConstruct()
 {
+	InitWidget();
 }
 
 void USkillsWidget::BeginDestroy()
@@ -19,13 +19,7 @@ void USkillsWidget::BeginDestroy()
 void USkillsWidget::InitWidget()
 {
 	GameMode = Cast<AMortalMortarGameMode>(GetWorld()->GetAuthGameMode());
-	Player = Cast<APlayerMotorCar>(GetWorld()->GetFirstPlayerController()->GetPawn());
-
-	if (Player)
-	{
-		Player->OnLevelUpDelegate.AddUFunction(this, FName("InitSkillChoices"));
-	}
-
+	
 	//---------------BUTTON 1------------------------------------
 	UWidget* ButtonWidget_1 = GetWidgetFromName(TEXT("Btn1"));
 	if (ButtonWidget_1)
@@ -117,7 +111,7 @@ void USkillsWidget::RestoreUnselectedSkills(FOnSkillAction& skillAction)
 	
 	for (const auto ele : m_Skills)
 	{
-		if (ele->OnSkillActionDelegate.GetHandle() != skillAction.GetHandle())
+		if (!ele->bIsGenericSkill && ele->OnSkillActionDelegate.GetHandle() != skillAction.GetHandle())
 		{
 			GameMode->AddSkillsToPool(ele);
 		}
