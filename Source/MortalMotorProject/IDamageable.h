@@ -21,6 +21,7 @@ class MORTALMOTORPROJECT_API IIDamageable
 	GENERATED_BODY()
 
 public:
-	virtual void TakeDamge(float damage) = 0; 
+	virtual void TakeDamge(float damage) = 0;
+	virtual void DestroyEnemy() = 0;
 	virtual bool IsAlive() const = 0;
 };

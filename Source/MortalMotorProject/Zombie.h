@@ -21,26 +21,53 @@ public:
 	USkeletalMeshComponent* Skeleton;
 
     UPROPERTY(EditDefaultsOnly)
-        UCapsuleComponent* CapsuleComponent;
+	UCapsuleComponent* CapsuleComponent;
 
     virtual void Tick(float DeltaSeconds) override;
+
+    virtual void PostInitializeComponents() override;
+
+    virtual void TakeDamge(float damage) override;
+
+     
 
     // Function to move the Zombie to a given location
     UFUNCTION()
         void MoveToLocation(const FVector& TargetLocation);
 
- 
+protected:
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+        UAnimInstance* ZombieAnimInstance;
+		
 
 private:
     UPROPERTY(EditAnywhere, Category = "Movement")
-        float MoveSpeed;
+		float MoveSpeed;
 
     UPROPERTY()
-    // Reference to the AIController
-    class AAIController* ZombieAIController;
+        TArray<UAnimMontage*> Hit_Montages;
+
+    UPROPERTY()
+        TArray<UAnimMontage*> Death_Montages;
+
+    UPROPERTY()
+		UAnimMontage* Hit_Montage01;
+
+    UPROPERTY()
+		UAnimMontage* Hit_Montage02;
+
+    UPROPERTY()
+        UAnimMontage* Death_Montage01;
+
+    UPROPERTY()
+        UAnimMontage* Death_Montage02;
+
+	// Reference to the AIController
+    UPROPERTY()
+		class AAIController* ZombieAIController;
    
     UPROPERTY()
-    APawn* PlayerPawn;
+		APawn* PlayerPawn;
 
 };
 
