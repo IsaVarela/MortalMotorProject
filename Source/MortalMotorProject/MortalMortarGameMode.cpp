@@ -33,49 +33,34 @@ void AMortalMortarGameMode::BeginPlay()
 			m_UpgradeComponent = Cast<UUpgradesComponent>(m_Player->GetComponentByClass(UUpgradesComponent::StaticClass()));
 		}
 	}
+}
 
-	
+void AMortalMortarGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
 }
 
 void AMortalMortarGameMode::InitAllCoreSkills()
 {
-	//Create the skills
-	FCoreSkill CoreSkill_1;
-	FCoreSkill CoreSkill_2;
-	FCoreSkill CoreSkill_3;
-	FCoreSkill CoreSkill_4;
+	//Create Skills
+	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("MiniGun"));
+	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("Nitro"));
+	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("FlameThrower"));
+	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("Mines"));
+	
+	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% Speed"));
+	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% HP"));
 
-	//Generic Skills
-	FCoreSkill GenericSkill_1;
-	FCoreSkill GenericSkill_2;
-
-	GenericSkill_1.SkillName = "Add 5% Speed";
-	GenericSkill_2.SkillName = "Add 5% HP";
-
-	//Assign names
-	CoreSkill_1.SkillName = "MiniGun";
-	CoreSkill_2.SkillName = "Nitro";
-	CoreSkill_3.SkillName = "FlameThrower";
-	CoreSkill_4.SkillName = "Mines";
-
-	//Finish Binding Delegates
-	CoreSkill_1.OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateMinigun);
-	CoreSkill_2.OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateNitro);
-	CoreSkill_3.OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateFlameThrower);
-	CoreSkill_4.OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateMines);
-
-	GenericSkill_1.OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp1);
-	GenericSkill_2.OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp2);
 
 	
-	//Populate List
-	m_AllCoreSkills.Add(CoreSkill_1);
-	m_AllCoreSkills.Add(CoreSkill_2);
-	m_AllCoreSkills.Add(CoreSkill_3);
-	m_AllCoreSkills.Add(CoreSkill_4);
+	//Finish Binding Delegates
+	m_AllCoreSkills[0]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateMinigun);
+	m_AllCoreSkills[1]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateNitro);
+	m_AllCoreSkills[2]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateFlameThrower);
+	m_AllCoreSkills[3]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateMines);
 
-	m_GenericSkills.Add(GenericSkill_1);
-	m_GenericSkills.Add(GenericSkill_2);
+	m_GenericSkills[0]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp1);
+	m_GenericSkills[1]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp2);
 }
 
 //----------------------Core Skill Implementations----------------------------
@@ -89,10 +74,10 @@ void AMortalMortarGameMode::ActivateMinigun()
 }
 
 
-FCoreSkill AMortalMortarGameMode::GetRandomSkill()
+TSharedPtr<FCoreSkill> AMortalMortarGameMode::GetRandomSkill()
 {
 	int index = -1;
-	FCoreSkill temp;
+	TSharedPtr<FCoreSkill> temp;
 
 	if (!m_AllCoreSkills.IsEmpty())
 	{
@@ -110,7 +95,7 @@ FCoreSkill AMortalMortarGameMode::GetRandomSkill()
 }
 
 
-void AMortalMortarGameMode::RemoveSelectedCoreSkill(const FCoreSkill& SkillToRemove)
+void AMortalMortarGameMode::RemoveSelectedCoreSkill(TSharedPtr<FCoreSkill> SkillToRemove)
 {
 	if (m_AllCoreSkills.IsEmpty()) { return; }
 	
@@ -120,7 +105,7 @@ void AMortalMortarGameMode::RemoveSelectedCoreSkill(const FCoreSkill& SkillToRem
 	}
 }
 
-void AMortalMortarGameMode::AddSkillsToPool(const FCoreSkill& SkillToAdd)
+void AMortalMortarGameMode::AddSkillsToPool(TSharedPtr<FCoreSkill> SkillToAdd)
 {
 	m_AllCoreSkills.Add(SkillToAdd);
 }

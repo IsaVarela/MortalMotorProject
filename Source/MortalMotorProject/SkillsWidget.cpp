@@ -11,6 +11,11 @@ void USkillsWidget::NativeConstruct()
 {
 }
 
+void USkillsWidget::BeginDestroy()
+{
+	Super::BeginDestroy();
+}
+
 void USkillsWidget::InitWidget()
 {
 	GameMode = Cast<AMortalMortarGameMode>(GetWorld()->GetAuthGameMode());
@@ -112,7 +117,7 @@ void USkillsWidget::RestoreUnselectedSkills(FOnSkillAction& skillAction)
 	
 	for (const auto ele : m_Skills)
 	{
-		if (ele.OnSkillActionDelegate.GetHandle() != skillAction.GetHandle())
+		if (ele->OnSkillActionDelegate.GetHandle() != skillAction.GetHandle())
 		{
 			GameMode->AddSkillsToPool(ele);
 		}
@@ -133,8 +138,8 @@ void USkillsWidget::InitSkillChoices()
 	{
 		m_btn1Action.Unbind();
 	}
-	m_btn1Action = temp.OnSkillActionDelegate;
-	m_Btn1Text->SetText(FText::FromString(temp.SkillName));
+	m_btn1Action = temp->OnSkillActionDelegate;
+	m_Btn1Text->SetText(FText::FromString(temp->SkillName));
 
 	//for button 2
 	auto temp2 = GameMode->GetRandomSkill();
@@ -145,8 +150,8 @@ void USkillsWidget::InitSkillChoices()
 		m_btn2Action.Unbind();
 	}
 
-	m_btn2Action = temp2.OnSkillActionDelegate;
-	m_Btn2Text->SetText(FText::FromString(temp2.SkillName));
+	m_btn2Action = temp2->OnSkillActionDelegate;
+	m_Btn2Text->SetText(FText::FromString(temp2->SkillName));
 
 	//for button 3
 	auto temp3 = GameMode->GetRandomSkill();
@@ -157,8 +162,8 @@ void USkillsWidget::InitSkillChoices()
 		m_btn3Action.Unbind();
 	}
 
-	m_btn3Action = temp3.OnSkillActionDelegate;
-	m_Btn3Text->SetText(FText::FromString(temp3.SkillName));
+	m_btn3Action = temp3->OnSkillActionDelegate;
+	m_Btn3Text->SetText(FText::FromString(temp3->SkillName));
 
 	
 }

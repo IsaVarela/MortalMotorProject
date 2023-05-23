@@ -14,6 +14,7 @@ class MORTALMOTORPROJECT_API USkillsWidget : public UUserWidget
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual void BeginDestroy() override;
 
 	UFUNCTION(BlueprintCallable)
 	void InitWidget();
@@ -44,7 +45,7 @@ private:
 	FOnSkillAction m_btn2Action;
 	FOnSkillAction m_btn3Action;
 
-	TArray<FCoreSkill> m_Skills;
+	TArray<TSharedPtr<FCoreSkill>> m_Skills;
 
 	void RestoreUnselectedSkills(FOnSkillAction& skillAction);
 
