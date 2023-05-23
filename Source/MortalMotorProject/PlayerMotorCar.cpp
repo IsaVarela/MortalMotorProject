@@ -9,6 +9,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+ 
 
 
 APlayerMotorCar::APlayerMotorCar() :
@@ -16,7 +17,6 @@ APlayerMotorCar::APlayerMotorCar() :
 	Level(0)
 {
 	AGold::s_OnGoldCollected.BindUObject(this, &APlayerMotorCar::HandleGoldCollected);
-	
 }
 
 void APlayerMotorCar::BeginPlay()
@@ -117,6 +117,8 @@ void APlayerMotorCar::Steer(float x)
 
     GetVehicleMovement()->SetSteeringInput(x);
 }
+
+
 
 
  

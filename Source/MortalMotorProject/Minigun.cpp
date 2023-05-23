@@ -155,7 +155,10 @@ void AMinigun::Shoot()
 	{
 		Target = nullptr;
 		StopShoot();
+		// called scan target again to change targets when they are dead but still present in the scene
+		ScanForTarget();
 	}
+	
 }
 
 void AMinigun::StopShoot()

@@ -42,8 +42,24 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::TakeDamge(float damage)
 {
 	HealthPoints = FMath::Max(0, HealthPoints - damage);
+	// rewrote this part to use the IsAlive function since it already returns the hitpoint count
+	if(IsAlive())
+	{
+		if (HitParticlesComponent)
+		{
+			HitParticlesComponent->Activate();
+		}
+	}
+	else
+	{
+		// added a delay to the destruction of the objects inheriting from this class to allow some room to play death animations or additional code 
+		const float delay = 6.0f;
 
-	if (HealthPoints == 0.f)
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemy::DestroyEnemy, delay, false);
+	}
+
+	/*if (HealthPoints == 0.f)
 	{
 		Destroy();
 	}
@@ -53,7 +69,13 @@ void AEnemy::TakeDamge(float damage)
 		{
 			HitParticlesComponent->Activate();
 		}
-	}
+	}*/
 }
+
+void AEnemy::DestroyEnemy()
+{
+	Destroy();
+}
+
 
 
