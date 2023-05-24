@@ -16,7 +16,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	FString SkillName;
-
+	bool bIsGenericSkill;
 	FOnSkillAction OnSkillActionDelegate;
 
 	bool operator==(const FCoreSkill& Other) const
@@ -45,9 +45,10 @@ public:
 
 	FCoreSkill() = default;
 
-	FCoreSkill(const FString& _SkillName)
+	FCoreSkill(const FString& _SkillName,bool _IsGeneric = false)
 	{
 		SkillName = _SkillName;
+		bIsGenericSkill = _IsGeneric;
 	}
 
 	~FCoreSkill()

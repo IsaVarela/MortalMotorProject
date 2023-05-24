@@ -3,10 +3,10 @@
 
 #include "MortalMortarGameMode.h"
 #include "PlayerMotorCar.h"
-#include "Math/UnrealMathUtility.h"
-#include "Containers/Array.h"
 #include "UpgradesComponent.h"
 #include "CoreSkill.h"
+#include "SkillsWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void AMortalMortarGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -28,11 +28,18 @@ void AMortalMortarGameMode::BeginPlay()
 
 		if (m_Player)
 		{
-			m_Player->OnLevelUpDelegate.AddUFunction(this, FName("ActivateSkillUI"));
+			//m_Player->OnLevelUpDelegate.AddUFunction(this, FName("ActivateSkillUI"));
+			m_Player->OnLevelUpDelegate.AddUFunction(this, FName("IncrementQueueCount"));
 
 			m_UpgradeComponent = Cast<UUpgradesComponent>(m_Player->GetComponentByClass(UUpgradesComponent::StaticClass()));
 		}
 	}
+
+	//Create Widget
+	m_SkillWidget = CreateWidget<USkillsWidget>(m_PlayerController, SkillWidgetTemplate);
+	m_SkillWidget->AddToViewport(100);
+	m_SkillWidget->bIsFocusable = true;
+	m_SkillWidget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void AMortalMortarGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -48,8 +55,8 @@ void AMortalMortarGameMode::InitAllCoreSkills()
 	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("FlameThrower"));
 	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("Mines"));
 	
-	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% Speed"));
-	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% HP"));
+	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% Speed",true));
+	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% HP",true));
 
 
 	
@@ -63,13 +70,58 @@ void AMortalMortarGameMode::InitAllCoreSkills()
 	m_GenericSkills[1]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp2);
 }
 
+void AMortalMortarGameMode::IncrementQueueCount()
+{
+	m_QueueCount++;
+	if (!bIsLevelUpInProgress)
+	{
+		ActivateSkillUI();
+	}
+}
+
+void AMortalMortarGameMode::ActivateSkillUI()
+{
+	if (m_SkillWidget == nullptr) { return; }
+
+	bIsLevelUpInProgress = true;
+	m_SkillWidget->InitSkillChoices(); //generate new skills from the pool
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+	m_SkillWidget->SetVisibility(ESlateVisibility::Visible);
+
+	FInputModeUIOnly InputMode;
+	m_PlayerController->SetInputMode(InputMode);
+	m_PlayerController->bShowMouseCursor = true;
+}
+
+void AMortalMortarGameMode::DisableSkillUI()
+{
+	if (m_SkillWidget == nullptr) { return; }
+
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+	FInputModeGameOnly InputMode;
+	m_PlayerController->SetInputMode(InputMode);
+	m_PlayerController->bShowMouseCursor = false;
+	m_SkillWidget->SetVisibility(ESlateVisibility::Collapsed);
+	m_QueueCount--;
+	
+	if (m_QueueCount > 0)
+	{
+		//Still skills in Queue goind inside activateskillUi again
+		ActivateSkillUI();
+	}
+
+	else if (m_QueueCount == 0)
+	{
+		//no more skills in queue leaving
+		bIsLevelUpInProgress = false;
+	}
+}
+
 //----------------------Core Skill Implementations----------------------------
 void AMortalMortarGameMode::ActivateMinigun()
 {
-	/*FInputModeGameOnly InputMode;
-	m_PlayerController->SetInputMode(InputMode);
-	m_PlayerController->bShowMouseCursor = false;*/
-	
+	DisableSkillUI();
 	m_UpgradeComponent->EnableMinigun();
 }
 
@@ -108,4 +160,29 @@ void AMortalMortarGameMode::RemoveSelectedCoreSkill(TSharedPtr<FCoreSkill> Skill
 void AMortalMortarGameMode::AddSkillsToPool(TSharedPtr<FCoreSkill> SkillToAdd)
 {
 	m_AllCoreSkills.Add(SkillToAdd);
+}
+
+void AMortalMortarGameMode::ActivateNitro()
+{
+	DisableSkillUI();
+}
+
+void AMortalMortarGameMode::ActivateFlameThrower()
+{
+	DisableSkillUI();
+}
+
+void AMortalMortarGameMode::ActivateMines()
+{
+	DisableSkillUI();
+}
+
+void AMortalMortarGameMode::GenericSkillTemp1()
+{
+	DisableSkillUI();
+}
+
+void AMortalMortarGameMode::GenericSkillTemp2()
+{
+	DisableSkillUI();
 }
