@@ -89,20 +89,23 @@ void USkillsWidget::InitWidget()
 
 void USkillsWidget::ActivateButton_1()
 {
-	m_btn1Action.ExecuteIfBound();
 	RestoreUnselectedSkills(m_btn1Action);
+	m_btn1Action.ExecuteIfBound();
+	
 }
 
 void USkillsWidget::ActivateButton_2()
 {
-	m_btn2Action.ExecuteIfBound();
 	RestoreUnselectedSkills(m_btn2Action);
+	m_btn2Action.ExecuteIfBound();
+	
 }
 
 void USkillsWidget::ActivateButton_3()
 {
-	m_btn3Action.ExecuteIfBound();
 	RestoreUnselectedSkills(m_btn3Action);
+	m_btn3Action.ExecuteIfBound();
+	
 }
 
 void USkillsWidget::RestoreUnselectedSkills(FOnSkillAction& skillAction)

@@ -88,6 +88,7 @@ void AMortalMortarGameMode::ActivateSkillUI()
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
 
 	m_SkillWidget->SetVisibility(ESlateVisibility::Visible);
+
 	FInputModeUIOnly InputMode;
 	m_PlayerController->SetInputMode(InputMode);
 	m_PlayerController->bShowMouseCursor = true;
@@ -96,8 +97,8 @@ void AMortalMortarGameMode::ActivateSkillUI()
 void AMortalMortarGameMode::DisableSkillUI()
 {
 	if (m_SkillWidget == nullptr) { return; }
-	UGameplayStatics::SetGamePaused(GetWorld(), false);
 
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
 	FInputModeGameOnly InputMode;
 	m_PlayerController->SetInputMode(InputMode);
 	m_PlayerController->bShowMouseCursor = false;
@@ -106,11 +107,13 @@ void AMortalMortarGameMode::DisableSkillUI()
 	
 	if (m_QueueCount > 0)
 	{
+		//Still skills in Queue goind inside activateskillUi again
 		ActivateSkillUI();
 	}
 
 	else if (m_QueueCount == 0)
 	{
+		//no more skills in queue leaving
 		bIsLevelUpInProgress = false;
 	}
 }
@@ -156,7 +159,6 @@ void AMortalMortarGameMode::RemoveSelectedCoreSkill(TSharedPtr<FCoreSkill> Skill
 
 void AMortalMortarGameMode::AddSkillsToPool(TSharedPtr<FCoreSkill> SkillToAdd)
 {
-	UE_LOG(LogTemp, Warning, TEXT("I ADD THE SKILL: %s"), *SkillToAdd->SkillName);
 	m_AllCoreSkills.Add(SkillToAdd);
 }
 
