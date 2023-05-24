@@ -7,7 +7,6 @@
 #include "MortalMortarGameMode.generated.h"
 
 struct FCoreSkill;
-class USkillsWidget;
 
 UCLASS()
 class MORTALMOTORPROJECT_API AMortalMortarGameMode : public AGameModeBase
@@ -23,51 +22,36 @@ private:
 	class APlayerController* m_PlayerController;
 	class APlayerMotorCar* m_Player;
 	class UUpgradesComponent* m_UpgradeComponent;
-	USkillsWidget* m_SkillWidget;
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<USkillsWidget> SkillWidgetTemplate;
-
-	int32 m_QueueCount = 0;
-	bool bIsLevelUpInProgress = false;
-
-	UFUNCTION()
-	void IncrementQueueCount();
-		
 
 	TArray<TSharedPtr<FCoreSkill>> m_AllCoreSkills;
 	TArray<TSharedPtr<FCoreSkill>> m_GenericSkills;
 
-	UFUNCTION()
-	void DisableSkillUI();
 
-	UFUNCTION()
 	void InitAllCoreSkills();
 
-	UFUNCTION()
-	void ActivateSkillUI();
-
 public:
-	
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivateSkillUI();
 
 	//Core Skills
 	UFUNCTION()
 	void ActivateMinigun();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent)
 	void ActivateNitro();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent)
 	void ActivateFlameThrower();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent)
 	void ActivateMines();
 
 	//Generic Skills
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent)
 	void GenericSkillTemp1();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent)
 	void GenericSkillTemp2();
 
 	TSharedPtr<FCoreSkill> GetRandomSkill();
