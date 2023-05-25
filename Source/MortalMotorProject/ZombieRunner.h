@@ -27,10 +27,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+ 
 	virtual void PostInitializeComponents() override;
 
 	//overrides for the IDamageable interface 
@@ -40,14 +37,28 @@ public:
 
 	virtual bool IsAlive() const override { return HealthPoints > 0; }
 
+	///** called when something enters the trigger collision component */
+	//UFUNCTION()
+	//void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	///** called when something leaves the trigger collision component */
+	//UFUNCTION()
+	//void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	// this os called when other colliders hit but not overlap
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		FVector NormalImpulse, const FHitResult& Hit);
+
 	// function to make the zombie follow the player's position
 	void ChasePlayer(const FVector& TargetLocation) const;
+	void BecomeRagdoll();
 
 	//function to run when the hit points reach 0
 	void Death();
-
+ 
 	UPROPERTY()
-	AAIController* ZombieController;
+		AAIController* ZombieController;
 
 	UPROPERTY()
 		APawn* Player;
@@ -77,5 +88,8 @@ private:
 
 	UPROPERTY()
 		UAnimMontage* Death_Montage02;
+
+	UPROPERTY(EditAnywhere)
+		bool bIsCollidingWithPlayer;
  
 };
