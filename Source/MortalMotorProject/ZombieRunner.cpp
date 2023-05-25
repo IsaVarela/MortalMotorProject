@@ -7,6 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Animation/AnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "PlayerMotorCar.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AZombieRunner::AZombieRunner()
@@ -14,11 +16,16 @@ AZombieRunner::AZombieRunner()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+
+	 
 	//Get Anim montages
 	Hit_Montage01 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_03/Anim/Zombie_Reaction_Hit_01_Montage_Retargeted.Zombie_Reaction_Hit_01_Montage_Retargeted'"));
 	Hit_Montage02 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_03/Anim/Zombie_Reaction_Hit_02_Montage_Retargeted.Zombie_Reaction_Hit_02_Montage_Retargeted'"));
 	Death_Montage01 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_03/Anim/ZombieDeath_01_Montage_Retargeted.ZombieDeath_01_Montage_Retargeted'"));
 	Death_Montage02 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_03/Anim/ZombieDeath_02_Montage_Retargeted.ZombieDeath_02_Montage_Retargeted'"));
+
+ 
+	 
 }
 
 void AZombieRunner::PostInitializeComponents()
@@ -62,6 +69,10 @@ void AZombieRunner::BeginPlay()
 
 	Player = UGameplayStatics::GetPlayerPawn(this, 0);
 
+	bIsCollidingWithPlayer = false;
+
+	this->GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+	this->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit);
 	
 }
 
@@ -74,17 +85,17 @@ void AZombieRunner::Tick(float DeltaTime)
 	{
 		ChasePlayer(Player->GetActorLocation());
 	}
+
+	/*const FVector VehicleVelocity = Player->GetVelocity();
+	const float Speed = VehicleVelocity.Size();
+
+	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("RandomIndex: %f"), Speed));*/
 }
 
-// Called to bind functionality to input
-void AZombieRunner::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
+ 
 void AZombieRunner::TakeDamge(float damage)
 {
+	 
 	HealthPoints = FMath::Max(0, HealthPoints - damage);
 	// rewrote this part to use the IsAlive function since it already returns the hitpoint count
 	if (IsAlive())
@@ -94,7 +105,8 @@ void AZombieRunner::TakeDamge(float damage)
 		{
 			int32 RandomIndex = FMath::RandRange(0, Hit_Montages.Num() - 1);
 			ZombieAnimInstance->Montage_Play(Hit_Montages[RandomIndex], 1.0f);
-			//  GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("Montage array size: %i"), Hit_Montages.Num()));//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("RandomIndex: %i"), RandomIndex));
+			//  GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("Montage array size: %i"), Hit_Montages.Num()));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("RandomIndex: %i"), RandomIndex));
 		}
 
 		if (HitParticlesComponent)
@@ -113,6 +125,22 @@ void AZombieRunner::DestroyEnemy()
 	Destroy();
 }
 
+ 
+void AZombieRunner::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this && OtherComp)
+	{
+		APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
+		if (Car)
+		{
+			bIsCollidingWithPlayer = true;
+			// Print collision for debugging
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zombie collided with Car: %s"), bIsCollidingWithPlayer ? TEXT("true") : TEXT("false")));
+			TakeDamge(100.0f);
+		}
+	}
+}
+
 void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
 {
 	if(ZombieController && IsAlive())
@@ -120,6 +148,8 @@ void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
 		ZombieController->MoveToLocation(TargetLocation);
 	}
 }
+
+
 
 void AZombieRunner::Death()
 {
@@ -132,10 +162,25 @@ void AZombieRunner::Death()
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AZombieRunner::DestroyEnemy, Delay, false);
 
-	if (Death_Montages.Num() > 0)
+	if(bIsCollidingWithPlayer)
 	{
-		const int32 RandomIndex = FMath::RandRange(0, Death_Montages.Num() - 1);
-		ZombieAnimInstance->Montage_Play(Death_Montages[RandomIndex], 1.0f);
+		BecomeRagdoll();
 	}
+	else
+	{
+		if (Death_Montages.Num() > 0)
+		{
+			const int32 RandomIndex = FMath::RandRange(0, Death_Montages.Num() - 1);
+			ZombieAnimInstance->Montage_Play(Death_Montages[RandomIndex], 1.0f);
+		}
+	}
+}
+
+// set the zombie to ragdoll collision type and set simulate physics to true 
+void AZombieRunner::BecomeRagdoll()
+{
+	const ECollisionChannel CollisionObjectType = ECC_PhysicsBody;
+	GetMesh()->SetCollisionObjectType(CollisionObjectType);
+	GetMesh()->SetSimulatePhysics(true);
 }
 
