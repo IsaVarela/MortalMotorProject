@@ -22,7 +22,7 @@ APlayerMotorCar::APlayerMotorCar() :
 void APlayerMotorCar::BeginPlay()
 {
 	Super::BeginPlay();
-	//GetMesh()->OnComponentHit.AddDynamic(this, &APlayerMotorCar::OnHit);
+
 	//creat the Widget Ui based of the WidgetObject subclass
 	PlayerUI = CreateWidget<UPlayerUI>(GetWorld(), WidgetObject);
 	//add the created UI to the viewport
@@ -117,17 +117,6 @@ void APlayerMotorCar::Steer(float x)
 
     GetVehicleMovement()->SetSteeringInput(x);
 }
-
-//void APlayerMotorCar::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-//{
-//	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("iNSIDE FUNCTION"));
-//	// Handle the hit event
-//	if (OtherActor)
-//	{
-//		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("WE GOT ANOTHER ACTOR"));
-//		UE_LOG(LogTemp, Warning, TEXT("Hit event triggered with %s"), *OtherActor->GetName());
-//	}
-//}
 
 
 

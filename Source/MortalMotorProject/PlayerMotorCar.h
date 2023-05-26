@@ -29,12 +29,7 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
-
-	// this os called when other colliders hit but not overlap
-	/*UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		FVector NormalImpulse, const FHitResult& Hit);*/
-
+ 
 	class UChaosVehicleMovementComponent* VehicleMovementComponent;
 	 
 	class USpringArmComponent* SpringArm;
