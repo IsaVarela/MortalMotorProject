@@ -15,7 +15,9 @@ class MORTALMOTORPROJECT_API USkillsWidget : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 	virtual void BeginDestroy() override;
-	
+
+	UFUNCTION(BlueprintCallable)
+	void InitWidget();
 
 	UFUNCTION()
 	void ActivateButton_1();
@@ -27,6 +29,7 @@ protected:
 	void ActivateButton_3();
 
 private:
+	class APlayerMotorCar* Player;
 	class AMortalMortarGameMode* GameMode;
 
 	class UButton* m_Btn1;
@@ -45,11 +48,10 @@ private:
 	TArray<TSharedPtr<FCoreSkill>> m_Skills;
 
 	void RestoreUnselectedSkills(FOnSkillAction& skillAction);
-	void InitWidget();
 
-
-	
-public:
 	UFUNCTION()
 	void InitSkillChoices();
+
+	
+	
 };
