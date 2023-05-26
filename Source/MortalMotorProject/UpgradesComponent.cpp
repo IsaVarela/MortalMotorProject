@@ -11,7 +11,7 @@ UUpgradesComponent::UUpgradesComponent()
 	
 }
 
-
+//Changes
 // Called when the game starts
 void UUpgradesComponent::BeginPlay()
 {
