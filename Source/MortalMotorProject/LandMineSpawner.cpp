@@ -21,3 +21,9 @@ void ALandMineSpawner::Tick(float DeltaTime)
 
 }
 
+void ALandMineSpawner::EnableLandMineSpawner()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Enabled"));
+	bHasEnabled = true;
+}
+

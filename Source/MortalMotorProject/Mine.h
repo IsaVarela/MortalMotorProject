@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "LandMineSpawner.generated.h"
+#include "Mine.generated.h"
 
 UCLASS()
-class MORTALMOTORPROJECT_API ALandMineSpawner : public AActor
+class MORTALMOTORPROJECT_API AMine : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ALandMineSpawner();
+	AMine();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,8 +23,4 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void EnableLandMineSpawner();
-
-private:
-	bool bHasEnabled;
 };
