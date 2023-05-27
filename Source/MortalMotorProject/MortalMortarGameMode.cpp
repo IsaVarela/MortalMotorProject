@@ -174,6 +174,7 @@ void AMortalMortarGameMode::ActivateFlameThrower()
 
 void AMortalMortarGameMode::ActivateMines()
 {
+	m_UpgradeComponent->EnableMines();
 	DisableSkillUI();
 }
 

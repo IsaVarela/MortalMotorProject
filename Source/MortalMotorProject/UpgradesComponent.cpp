@@ -3,6 +3,7 @@
 
 #include "UpgradesComponent.h"
 #include "Minigun.h"
+#include "LandMineSpawner.h"
 
 // Sets default values for this component's properties
 UUpgradesComponent::UUpgradesComponent()
@@ -27,6 +28,11 @@ void UUpgradesComponent::BeginPlay()
 		{
 			m_Minigun = Cast<AMinigun>(ChildActor);
 		}
+
+		if (ChildActor->IsA(ALandMineSpawner::StaticClass()))
+		{
+			m_MinesSpawner = Cast<ALandMineSpawner>(ChildActor);
+		}
 	}
 }
 
@@ -44,6 +50,15 @@ void UUpgradesComponent::EnableMinigun()
 	{
 		m_Minigun->ShowMinigun();
 		m_Minigun->SetActorTickEnabled(true);
+	}
+}
+
+void UUpgradesComponent::EnableMines()
+{
+	if (m_MinesSpawner != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Enabling"));
+		m_MinesSpawner->EnableLandMineSpawner();
 	}
 }
 
