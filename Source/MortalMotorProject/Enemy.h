@@ -41,7 +41,7 @@ public:
 	UStaticMeshComponent* Body;
 
 	UPROPERTY(EditDefaultsOnly)
-		UArrowComponent* Arrow;
+	UArrowComponent* Arrow;
 
 private:
 

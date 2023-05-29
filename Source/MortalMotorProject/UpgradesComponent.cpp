@@ -57,7 +57,6 @@ void UUpgradesComponent::EnableMines()
 {
 	if (m_MinesSpawner != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enabling"));
 		m_MinesSpawner->EnableLandMineSpawner();
 	}
 }

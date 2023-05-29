@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "LandMineSpawner.generated.h"
 
+class AMine;
+
 UCLASS()
 class MORTALMOTORPROJECT_API ALandMineSpawner : public AActor
 {
@@ -27,4 +29,9 @@ public:
 
 private:
 	bool bHasEnabled;
+	float m_spawnTimer = 0.f;
+	float m_spawnDelay = 3.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AMine> MinePrefab;
 };
