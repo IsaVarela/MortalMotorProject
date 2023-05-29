@@ -5,7 +5,6 @@
 #include "Gold.h"
 #include "PlayerUI.h"
 #include "ChaosWheeledVehicleMovementComponent.h" 
-#include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -36,7 +35,6 @@ void APlayerMotorCar::BeginPlay()
 void APlayerMotorCar::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString::Printf(TEXT("Throttle: %f"), GetVehicleMovementComponent()->GetThrottleInput()));
 
 	CameraRotation();
 }
@@ -99,22 +97,16 @@ void APlayerMotorCar::CameraRotation()
 
 void APlayerMotorCar::Accelerate()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("FORWARD IS PRESSED"));
     GetVehicleMovementComponent()->SetThrottleInput(1);
 }
 
 void APlayerMotorCar::Break()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("BREAK IS PRESSED"));
     GetVehicleMovement()->SetBrakeInput(1);
 }
 
 void APlayerMotorCar::Steer(float x)
 {
-    if (GetVehicleMovementComponent()->GetSteeringInput() != 0) {
-        GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString::Printf(TEXT("Steer: %f"), GetVehicleMovementComponent()->GetSteeringInput()));
-    }
-
     GetVehicleMovement()->SetSteeringInput(x);
 }
 

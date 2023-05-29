@@ -12,15 +12,37 @@ class MORTALMOTORPROJECT_API AMine : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+
 	AMine();
 
 protected:
-	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
+
 	virtual void Tick(float DeltaTime) override;
 
+
+private:
+	float m_lifeTime = 3.0f;
+	float m_delayedExplosion = 1.5f;
+	float m_explosionRadius = 700.f;
+	float m_damage = 1000.f;
+
+	FTimerHandle DelayedHandle;
+	FTimerHandle SelfDestructDelay;
+	TArray<FHitResult> m_hits;
+	TArray<AActor*> m_gnoredActors;
+	ETraceTypeQuery TraceChannel;
+
+	UPROPERTY(EditDefaultsOnly)
+	UParticleSystemComponent* ExplostionVFX;
+
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMeshComponent* MineBody;
+
+	void Explode();
+	void SelfDestroy();
+	
 };
