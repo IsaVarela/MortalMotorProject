@@ -16,7 +16,7 @@ AMine::AMine()
 
 	ExplostionVFX = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Explosion_VFX"));
 	ExplostionVFX->bAutoActivate = false;
-	ExplostionVFX->SetupAttachment(MineBody);
+	//ExplostionVFX->SetupAttachment(MineBody);
 
 	TraceChannel = UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1);;
 }
