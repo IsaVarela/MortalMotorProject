@@ -58,6 +58,9 @@ public:
 	//function to run when the hit points reach 0
 	void Death();
 
+	//function to restart particle system to make it look better
+	void ParticleSystem();
+
 	UPROPERTY()
 		AAIController* ZombieController;
 
@@ -66,6 +69,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
 		UParticleSystemComponent* HitParticlesComponent;
+
+	UPROPERTY()
+		UParticleSystem* ParticleSystemTemplate;
 
 private:
 
@@ -92,5 +98,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		bool bIsCollidingWithPlayer;
+
+	UPROPERTY(EditAnywhere)
+		bool bIsPsPlaying;
 
 };

@@ -28,9 +28,10 @@ AZombieRunner::AZombieRunner()
 	//For particle system
 	HitParticlesComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HitEffectComponent"));
 	HitParticlesComponent->SetupAttachment(RootComponent);
-	//HitParticlesComponent->bAutoActivate = false;
+	HitParticlesComponent->bAutoActivate = false;
 
-
+	ParticleSystemTemplate = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Juan_Active_Branch/Realistic_Starter_VFX_Pack_Vol2/Particles/Blood/P_Blood_Splat_Cone.P_Blood_Splat_Cone'"));
+	bIsPsPlaying = false;
 }
 
 void AZombieRunner::PostInitializeComponents()
@@ -118,7 +119,7 @@ void AZombieRunner::TakeDamge(float damage)
 		if (HitParticlesComponent)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("PARTICLE EFFECTS PLAY"));
-			HitParticlesComponent->Activate();
+			ParticleSystem();
 		}
 	}
 	else
@@ -160,6 +161,7 @@ void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
 
 void AZombieRunner::Death()
 {
+	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// command assigned directly to the character movement component it halts the object regardless of the AIController.  
 	this->GetCharacterMovement()->StopMovementImmediately();
 
@@ -171,6 +173,10 @@ void AZombieRunner::Death()
 
 	if (bIsCollidingWithPlayer)
 	{
+		if (HitParticlesComponent)
+		{
+			ParticleSystem();		 
+		}
 		BecomeRagdoll();
 	}
 	else
@@ -180,6 +186,29 @@ void AZombieRunner::Death()
 			const int32 RandomIndex = FMath::RandRange(0, Death_Montages.Num() - 1);
 			ZombieAnimInstance->Montage_Play(Death_Montages[RandomIndex], 1.0f);
 		}
+	}
+}
+
+//This function was added to replay the PS every time it is called instead of waiting for it to finish its regular lifetime before calling again
+void AZombieRunner::ParticleSystem()
+{
+	if (!bIsPsPlaying)
+	{
+		// add the template and play ps
+		HitParticlesComponent->SetTemplate(ParticleSystemTemplate);
+		HitParticlesComponent->ActivateSystem();
+
+		// Set IsPlaying to true
+		bIsPsPlaying = true;
+	}
+	else
+	{
+		// Stop the currently playing instance
+		HitParticlesComponent->DeactivateSystem();
+
+		// Spawn a new particle system instance
+		HitParticlesComponent->SetTemplate(ParticleSystemTemplate);
+		HitParticlesComponent->ActivateSystem();
 	}
 }
 
