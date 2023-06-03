@@ -60,6 +60,7 @@ public:
 
 	//function to restart particle system to make it look better
 	void ParticleSystem();
+	void DisableCollision();
 
 	UPROPERTY()
 		AAIController* ZombieController;

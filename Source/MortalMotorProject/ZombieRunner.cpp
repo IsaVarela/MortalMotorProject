@@ -161,7 +161,7 @@ void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
 
 void AZombieRunner::Death()
 {
-	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DisableCollision();
 	// command assigned directly to the character movement component it halts the object regardless of the AIController.  
 	this->GetCharacterMovement()->StopMovementImmediately();
 
@@ -198,7 +198,7 @@ void AZombieRunner::ParticleSystem()
 		HitParticlesComponent->SetTemplate(ParticleSystemTemplate);
 		HitParticlesComponent->ActivateSystem();
 
-		// Set IsPlaying to true
+		// Set bool to true
 		bIsPsPlaying = true;
 	}
 	else
@@ -212,6 +212,11 @@ void AZombieRunner::ParticleSystem()
 	}
 }
 
+void AZombieRunner::DisableCollision()
+{
+	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 // set the zombie to ragdoll collision type and set simulate physics to true 
 void AZombieRunner::BecomeRagdoll()
 {
@@ -219,7 +224,7 @@ void AZombieRunner::BecomeRagdoll()
 	GetMesh()->SetCollisionObjectType(CollisionObjectType);
 	GetMesh()->SetSimulatePhysics(true);
 
-	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DisableCollision();
 }
 
 
