@@ -9,6 +9,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerMotorCar.h"
 #include "Components/CapsuleComponent.h"
+#include "Sound/SoundCue.h"
+#include "Sound/SoundWave.h"
 
 // Sets default values
 AZombieRunner::AZombieRunner()
@@ -25,13 +27,17 @@ AZombieRunner::AZombieRunner()
 	Death_Montage02 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_03/Anim/ZombieDeath_02_Montage_Retargeted.ZombieDeath_02_Montage_Retargeted'"));
 
 
-	//For particle system
+	//Get particle system
 	HitParticlesComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HitEffectComponent"));
 	HitParticlesComponent->SetupAttachment(RootComponent);
 	HitParticlesComponent->bAutoActivate = false;
 
 	ParticleSystemTemplate = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Juan_Active_Branch/Realistic_Starter_VFX_Pack_Vol2/Particles/Blood/P_Blood_Splat_Cone.P_Blood_Splat_Cone'"));
 	bIsPsPlaying = false;
+
+	//Get audio
+	SoundCueBodyFall = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Enemies/SFX/SC_Body_Fall.SC_Body_Fall'"));
+	SoundCueHitCar = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Enemies/SFX/SC_Car_Hit.SC_Car_Hit'"));
 }
 
 void AZombieRunner::PostInitializeComponents()
@@ -79,7 +85,7 @@ void AZombieRunner::BeginPlay()
 
 	this->GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	this->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit); 
-
+	this->GetMesh()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit);
 	 
 }
 
@@ -146,6 +152,11 @@ void AZombieRunner::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zombie collided with Car: %s"), bIsCollidingWithPlayer ? TEXT("true") : TEXT("false")));
 			TakeDamge(100.0f);
 		}
+
+	/*	if (OtherComp->GetCollisionObjectType() == ECollisionChannel::ECC_WorldDynamic)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueBodyFall, this->GetActorLocation());
+		}*/
 	}
 }
 
@@ -178,6 +189,16 @@ void AZombieRunner::Death()
 			ParticleSystem();		 
 		}
 		BecomeRagdoll();
+
+		if(SoundCueBodyFall)
+		{
+			float Cue1duration = SoundCueHitCar->Duration;
+
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AZombieRunner::PlaySoundCueHitGround, Cue1duration, false);
+
+		}
+		 
+		
 	}
 	else
 	{
@@ -223,8 +244,22 @@ void AZombieRunner::BecomeRagdoll()
 	const ECollisionChannel CollisionObjectType = ECC_PhysicsBody;
 	GetMesh()->SetCollisionObjectType(CollisionObjectType);
 	GetMesh()->SetSimulatePhysics(true);
-
 	DisableCollision();
+
+	if (SoundCueHitCar)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueHitCar, this->GetActorLocation());
+	}
 }
+
+void AZombieRunner::PlaySoundCueHitGround()
+{
+	if(SoundCueBodyFall)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueBodyFall, this->GetActorLocation());
+	}
+}
+
+
 
 
