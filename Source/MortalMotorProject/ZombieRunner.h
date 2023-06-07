@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "AIController.h"
 #include "IDamageable.h"
+#include "Sound/SoundCue.h"
+#include "Sound/SoundWave.h" 
 #include "ZombieRunner.generated.h"
 
 UCLASS()
@@ -54,6 +56,7 @@ public:
 	void ChasePlayer(const FVector& TargetLocation) const;
 
 	void BecomeRagdoll();
+	void PlaySoundCueHitGround();
 
 	//function to run when the hit points reach 0
 	void Death();
@@ -74,6 +77,12 @@ public:
 	UPROPERTY()
 		UParticleSystem* ParticleSystemTemplate;
 
+	UPROPERTY()
+		USoundCue* SoundCueBodyFall;
+
+	UPROPERTY()
+		USoundCue* SoundCueHitCar;
+
 private:
 
 	UPROPERTY(EditDefaultsOnly)
@@ -84,7 +93,7 @@ private:
 
 	UPROPERTY()
 		TArray<UAnimMontage*> Death_Montages;
-
+	 
 	UPROPERTY()
 		UAnimMontage* Hit_Montage01;
 
