@@ -8,6 +8,7 @@
 #include "Animation/AnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerMotorCar.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Sound/SoundCue.h"
 #include "Sound/SoundWave.h"
@@ -28,16 +29,21 @@ AZombieRunner::AZombieRunner()
 
 
 	//Get particle system
+	bIsPsPlaying = false;
 	HitParticlesComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HitEffectComponent"));
 	HitParticlesComponent->SetupAttachment(RootComponent);
 	HitParticlesComponent->bAutoActivate = false;
-
 	ParticleSystemTemplate = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Juan_Active_Branch/Realistic_Starter_VFX_Pack_Vol2/Particles/Blood/P_Blood_Splat_Cone.P_Blood_Splat_Cone'"));
-	bIsPsPlaying = false;
+	
 
 	//Get audio
+	bIsSoundPlaying = false;
 	SoundCueBodyFall = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Enemies/SFX/SC_Body_Fall.SC_Body_Fall'"));
 	SoundCueHitCar = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Enemies/SFX/SC_Car_Hit.SC_Car_Hit'"));
+	SoundCueApproach = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Blueprints/Enemies/SFX/Zombie_Approach_Cue.Zombie_Approach_Cue'"));
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(GetRootComponent());
+	AudioComponent->bAutoActivate = false;
 }
 
 void AZombieRunner::PostInitializeComponents()
@@ -99,6 +105,8 @@ void AZombieRunner::Tick(float DeltaTime)
 		ChasePlayer(Player->GetActorLocation());
 	}
 
+	
+
 	/*const FVector VehicleVelocity = Player->GetVelocity();
 	const float Speed = VehicleVelocity.Size();
 
@@ -117,9 +125,7 @@ void AZombieRunner::TakeDamge(float damage)
 		if (Hit_Montages.Num() > 0)
 		{
 			int32 RandomIndex = FMath::RandRange(0, Hit_Montages.Num() - 1);
-			ZombieAnimInstance->Montage_Play(Hit_Montages[RandomIndex], 1.0f);
-			//  GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("Montage array size: %i"), Hit_Montages.Num()));
-			//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("RandomIndex: %i"), RandomIndex));
+			ZombieAnimInstance->Montage_Play(Hit_Montages[RandomIndex], 1.0f);			 
 		}
 
 		if (HitParticlesComponent)
@@ -152,24 +158,36 @@ void AZombieRunner::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zombie collided with Car: %s"), bIsCollidingWithPlayer ? TEXT("true") : TEXT("false")));
 			TakeDamge(100.0f);
 		}
-
-	/*	if (OtherComp->GetCollisionObjectType() == ECollisionChannel::ECC_WorldDynamic)
-		{
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueBodyFall, this->GetActorLocation());
-		}*/
+ 
 	}
 }
 
 void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
 {
+	
 	if (ZombieController && IsAlive())
 	{
 		ZombieController->MoveToLocation(TargetLocation);
+
+		if (!bIsSoundPlaying)
+		{
+
+			if (AudioComponent)
+			{
+				AudioComponent->SetSound(SoundCueApproach);					 
+				bIsSoundPlaying = true;
+				AudioComponent->Play();
+			}
+		}
 	}
+	else
+	{
+		if(AudioComponent)
+		AudioComponent->Stop();		 
+	}
+
 }
-
-
-
+ 
 void AZombieRunner::Death()
 {
 	DisableCollision();
@@ -178,9 +196,7 @@ void AZombieRunner::Death()
 
 	// added a delay to the destruction of the objects inheriting from this class to allow some room to play death animations or additional code 
 	const float Delay = 4.0f;
-
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AZombieRunner::DestroyEnemy, Delay, false);
+	
 
 	if (bIsCollidingWithPlayer)
 	{
@@ -192,13 +208,12 @@ void AZombieRunner::Death()
 
 		if(SoundCueBodyFall)
 		{
-			float Cue1duration = SoundCueHitCar->Duration;
-
-			GetWorldTimerManager().SetTimer(TimerHandle, this, &AZombieRunner::PlaySoundCueHitGround, Cue1duration, false);
+			//float Cue1duration = SoundCueHitCar->Duration;  // should use some way of collision detection instead of time
+			FTimerHandle TimerHandle;
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AZombieRunner::PlaySoundCueHitGround, 1.0f, false);
 
 		}
-		 
-		
+ 
 	}
 	else
 	{
@@ -208,6 +223,10 @@ void AZombieRunner::Death()
 			ZombieAnimInstance->Montage_Play(Death_Montages[RandomIndex], 1.0f);
 		}
 	}
+
+
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AZombieRunner::DestroyEnemy, Delay, false);
 }
 
 //This function was added to replay the PS every time it is called instead of waiting for it to finish its regular lifetime before calling again
