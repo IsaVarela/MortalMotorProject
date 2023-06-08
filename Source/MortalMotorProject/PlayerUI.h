@@ -16,13 +16,16 @@ class MORTALMOTORPROJECT_API UPlayerUI : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+	void UpdateHPBar(float val);
 
 private:
 	class APlayerMotorCar* Player;
 
 	void UpdateProgressBar(float val);
+	
 
 	UProgressBar* ProgressBar;
+	UProgressBar* ProgressHP;
 
 	
 };

@@ -22,6 +22,11 @@ public:
 	FOnGoldCollected OnGoldCollectedDelegate;
 	FOnLevelUp OnLevelUpDelegate;
 
+	void Health(float damage);
+
+	UPROPERTY()
+		float PlayerHealth;
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -39,6 +44,8 @@ private:
 	void Break();
 	void Steer(float x);	 
 	void CameraRotation();
+
+	
 
 	UPROPERTY(VisibleAnywhere)
 	int GoldAmount;

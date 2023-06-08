@@ -16,6 +16,18 @@ APlayerMotorCar::APlayerMotorCar() :
 	Level(0)
 {
 	AGold::s_OnGoldCollected.BindUObject(this, &APlayerMotorCar::HandleGoldCollected);
+	PlayerHealth = 100.0f;
+}
+
+void APlayerMotorCar::Health(float damage)
+{
+	PlayerHealth = FMath::Max(0, PlayerHealth - damage);
+
+	if (PlayerUI)
+	{
+		PlayerUI->UpdateHPBar(PlayerHealth/100);
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("HP: %f"), PlayerHealth));
 }
 
 void APlayerMotorCar::BeginPlay()

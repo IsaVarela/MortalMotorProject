@@ -12,11 +12,12 @@ void UPlayerUI::NativeConstruct()
 	if (Player)
 	{
 		//Sub to the delegate when player collects the gold
-		Player->OnGoldCollectedDelegate.BindUObject(this, &UPlayerUI::UpdateProgressBar);
+		Player->OnGoldCollectedDelegate.BindUObject(this, &UPlayerUI::UpdateProgressBar);		 
 	}
 
 	//Get the Progress bar that was made in BP
 	ProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("ProgressExp")));
+	ProgressHP = Cast<UProgressBar>(GetWidgetFromName(TEXT("ProgressHP")));
 }
 
 //Updates the progress bar based on value that was passed by the delegate
@@ -27,5 +28,14 @@ void UPlayerUI::UpdateProgressBar(float val)
 		//Clamp the value for percent (0-100)
 		val = FMath::Clamp(val, 0, 1);
 		ProgressBar->SetPercent(val);
+	}
+}
+
+void UPlayerUI::UpdateHPBar(float val)
+{
+	if(ProgressHP)
+	{
+		val = FMath::Clamp(val, 0, 1);
+		ProgressHP->SetPercent(val);
 	}
 }
