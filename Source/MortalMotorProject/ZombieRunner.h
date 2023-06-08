@@ -83,6 +83,12 @@ public:
 	UPROPERTY()
 		USoundCue* SoundCueHitCar;
 
+	UPROPERTY()
+		USoundCue* SoundCueApproach;
+
+	UPROPERTY()
+		UAudioComponent* AudioComponent;
+
 private:
 
 	UPROPERTY(EditDefaultsOnly)
@@ -111,5 +117,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		bool bIsPsPlaying;
+
+	UPROPERTY(EditAnywhere)
+	  mutable bool bIsSoundPlaying;
 
 };
