@@ -19,7 +19,7 @@ AZombieRunner::AZombieRunner()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
+	AttackPower = 25.0f;
 
 	//Get Anim montages
 	Hit_Montage01 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_03/Anim/Zombie_Reaction_Hit_01_Montage_Retargeted.Zombie_Reaction_Hit_01_Montage_Retargeted'"));
@@ -157,6 +157,7 @@ void AZombieRunner::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 			// Print collision for debugging
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zombie collided with Car: %s"), bIsCollidingWithPlayer ? TEXT("true") : TEXT("false")));
 			TakeDamge(100.0f);
+			Car->Health(AttackPower);
 		}
  
 	}

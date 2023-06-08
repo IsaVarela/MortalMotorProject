@@ -63,6 +63,7 @@ public:
 
 	//function to restart particle system to make it look better
 	void ParticleSystem();
+
 	void DisableCollision();
 
 	UPROPERTY()
@@ -88,6 +89,9 @@ public:
 
 	UPROPERTY()
 		UAudioComponent* AudioComponent;
+
+	UPROPERTY()
+		float AttackPower;
 
 private:
 
