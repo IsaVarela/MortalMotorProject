@@ -8,6 +8,7 @@
 
 class AMinigun;
 class ALandMineSpawner;
+class AFlameThrower; 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MORTALMOTORPROJECT_API UUpgradesComponent : public UActorComponent
@@ -25,6 +26,7 @@ protected:
 private:
 	AMinigun* m_Minigun;
 	ALandMineSpawner* m_MinesSpawner;
+	AFlameThrower* m_FlameThrower; 
 
 public:	
 	// Called every frame
@@ -32,4 +34,5 @@ public:
 
 	void EnableMinigun();
 	void EnableMines();
+	void EnableFlameThrower(); 
 };

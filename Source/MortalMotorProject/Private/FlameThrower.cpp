@@ -12,7 +12,7 @@
 AFlameThrower::AFlameThrower():
 	m_searchTimer(0.f), 
 	m_attackTimer(0.f),
-	InRange(true)
+	InRange(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -32,7 +32,7 @@ AFlameThrower::AFlameThrower():
 	TraceParams.bReturnPhysicalMaterial = false;
 	TraceParams.AddIgnoredActor(this);
 	SweepSphere = FCollisionShape::MakeSphere(Radius);
-	m_offset = FVector(5000.f, 0, 0);
+	m_offset = FVector(0, 0, 0.1f);
 	InitialRotation = FlameThrowerBody->GetComponentRotation();
 }
 
@@ -53,8 +53,6 @@ void AFlameThrower::Tick(float DeltaTime)
 	if (Target == nullptr)
 	{
 		ScanTarget();
-		//UE_LOG(LogTemp, Warning, TEXT("ScanTarget"));
-
 	}
 
 	if (Target != nullptr)
@@ -63,13 +61,9 @@ void AFlameThrower::Tick(float DeltaTime)
 		{
 			m_searchTimer = 0.f;
 			CheckInRange();
-			//UE_LOG(LogTemp, Warning, TEXT("CheckInRange"));
-
 		}
 
-		//FVector TargetLocation = Target->GetActorLocation(); 
 		RotateTurret(DeltaTime);
-		//UE_LOG(LogTemp, Warning, TEXT("RotateTurret"));
 
 		if (m_attackTimer >= FireRate && Target)
 		{
@@ -80,7 +74,6 @@ void AFlameThrower::Tick(float DeltaTime)
 		m_attackTimer += DeltaTime;
 		m_searchTimer += DeltaTime;
 	}
-
 }
 
 void AFlameThrower::ShowFlameThrower()
@@ -117,15 +110,9 @@ void AFlameThrower::CheckInRange()
 	if (Distance > Radius)
 	{
 		Target = nullptr;
-		InRange = false;
 		StopFire();
-		/*if (GEngine) {
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, TEXT("Target out of Range"));
-		}*/
 		ResetRotation();
 	}
-	else
-		InRange = true;
 }
 
 void AFlameThrower::ScanTarget()
@@ -136,7 +123,7 @@ void AFlameThrower::ScanTarget()
 		FlameThrowerBody->GetComponentLocation(),
 		FlameThrowerBody->GetComponentLocation() + m_offset,
 		FQuat::Identity,
-		ECollisionChannel::ECC_Visibility,
+		ECollisionChannel::ECC_GameTraceChannel1,
 		SweepSphere,
 		TraceParams
 	);
@@ -144,23 +131,6 @@ void AFlameThrower::ScanTarget()
 	if (bHit)
 	{
 		Target = HitResult.GetActor();
-
-		if (Target && Target->GetClass()->ImplementsInterface(UIDamageable::StaticClass()))
-		{
-			DrawDebugSphere
-			(
-				GetWorld(),
-				HitResult.ImpactPoint,
-				50.f,
-				12.f,
-				FColor::Green,
-				false,
-				-1.f,
-				20.f
-			);
-		}
-		else
-			Target = nullptr;
 	}
 }
 
@@ -169,22 +139,18 @@ void AFlameThrower::Fire()
 	if (Target == nullptr)
 		return;
 
-	if (IIDamageable* Damage = Cast<IIDamageable>(Target))
+	IIDamageable* Damage = Cast<IIDamageable>(Target); 
+	FireFxComponent->Activate();
+
+	if (Damage && Damage->IsAlive())
 	{
-		FireFxComponent->Activate();
-
-		UE_LOG(LogTemp, Warning, TEXT("ActivateNiagara"));
-
-		if (Damage->IsAlive())
-		{
-			Damage->TakeDamge(Damge);
-		}
-		else
-		{
-			Target = nullptr;
-			StopFire();
-			ResetRotation();
-		}
+		Damage->TakeDamge(Damge);
+	}
+	if(!Damage->IsAlive())
+	{
+		Target = nullptr;
+		StopFire();
+		ResetRotation();
 	}
 }
 

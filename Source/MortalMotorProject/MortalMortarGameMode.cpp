@@ -170,6 +170,7 @@ void AMortalMortarGameMode::ActivateNitro()
 void AMortalMortarGameMode::ActivateFlameThrower()
 {
 	DisableSkillUI();
+	m_UpgradeComponent->EnableFlameThrower(); 
 }
 
 void AMortalMortarGameMode::ActivateMines()

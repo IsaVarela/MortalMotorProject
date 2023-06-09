@@ -51,13 +51,13 @@ private:
 	AActor* Target;
 
 	UPROPERTY(EditDefaultsOnly)
-		float Radius = 10.f;
+		float Radius = 2000.f;
 
 	UPROPERTY(EditDefaultsOnly)
 		float TurretRotationSpeed = 10.f;
 
 	UPROPERTY(EditDefaultsOnly)
-		float Damge = 10.f;
+		float Damge = 20.f;
 
 	UPROPERTY(EditDefaultsOnly)
 		float FireRate = 0.2f;
