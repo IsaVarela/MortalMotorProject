@@ -5,7 +5,8 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
-#include "MortalMotorProject/IDamageable.h"
+#include "MortalMotorProject/IDamageable.h" 
+#include "MortalMotorProject/ZombieRunner.h"
 
 
 // Sets default values
@@ -131,6 +132,7 @@ void AFlameThrower::ScanTarget()
 	if (bHit)
 	{
 		Target = HitResult.GetActor();
+		
 	}
 }
 
@@ -142,9 +144,18 @@ void AFlameThrower::Fire()
 	IIDamageable* Damage = Cast<IIDamageable>(Target); 
 	FireFxComponent->Activate();
 
+	
+
 	if (Damage && Damage->IsAlive())
 	{
 		Damage->TakeDamge(Damge);
+		if(Target->IsA<AZombieRunner>())
+		{
+			AZombieRunner* Zombie = Cast<AZombieRunner>(Target);
+			Zombie->bIsBurned = true;
+		}
+		
+		
 	}
 	if(!Damage->IsAlive())
 	{

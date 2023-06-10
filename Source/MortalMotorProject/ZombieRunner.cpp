@@ -33,8 +33,8 @@ AZombieRunner::AZombieRunner()
 	HitParticlesComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HitEffectComponent"));
 	HitParticlesComponent->SetupAttachment(RootComponent);
 	HitParticlesComponent->bAutoActivate = false;
-	ParticleSystemTemplate = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Juan_Active_Branch/Realistic_Starter_VFX_Pack_Vol2/Particles/Blood/P_Blood_Splat_Cone.P_Blood_Splat_Cone'"));
-	
+	Template_Blood = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/Juan_Active_Branch/Realistic_Starter_VFX_Pack_Vol2/Particles/Blood/P_Blood_Splat_Cone.P_Blood_Splat_Cone'"));
+	Template_Fire = LoadObject<UParticleSystem>(nullptr, TEXT("/Script/Engine.ParticleSystem'/Game/AssetPacks/Realistic_Starter_VFX_Pack_Vol2/Particles/Fire/P_Fire_Big.P_Fire_Big'"));
 
 	//Get audio
 	bIsSoundPlaying = false;
@@ -88,6 +88,8 @@ void AZombieRunner::BeginPlay()
 	Player = UGameplayStatics::GetPlayerPawn(this, 0);
 
 	bIsCollidingWithPlayer = false;
+
+	bIsBurned = false;
 
 	this->GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	this->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit); 
@@ -233,24 +235,50 @@ void AZombieRunner::Death()
 //This function was added to replay the PS every time it is called instead of waiting for it to finish its regular lifetime before calling again
 void AZombieRunner::ParticleSystem()
 {
-	if (!bIsPsPlaying)
+	if (!bIsBurned)
 	{
-		// add the template and play ps
-		HitParticlesComponent->SetTemplate(ParticleSystemTemplate);
-		HitParticlesComponent->ActivateSystem();
+		if (!bIsPsPlaying)
+		{
+			// add the template and play ps
+			HitParticlesComponent->SetTemplate(Template_Blood);
+			HitParticlesComponent->ActivateSystem();
 
-		// Set bool to true
-		bIsPsPlaying = true;
-	}
-	else
+			// Set bool to true
+			bIsPsPlaying = true;
+		}
+		else
+		{
+			// Stop the currently playing instance
+			HitParticlesComponent->DeactivateSystem();
+
+			// Spawn a new particle system instance
+			HitParticlesComponent->SetTemplate(Template_Blood);
+			HitParticlesComponent->ActivateSystem();
+		}
+	} else
 	{
-		// Stop the currently playing instance
-		HitParticlesComponent->DeactivateSystem();
+		if (!bIsPsPlaying)
+		{
+			// add the template and play ps
+			HitParticlesComponent->SetTemplate(Template_Fire);
+			HitParticlesComponent->ActivateSystem();
 
-		// Spawn a new particle system instance
-		HitParticlesComponent->SetTemplate(ParticleSystemTemplate);
-		HitParticlesComponent->ActivateSystem();
+			// Set bool to true
+			bIsPsPlaying = true;
+		}
+		else
+		{
+			// Stop the currently playing instance
+			HitParticlesComponent->DeactivateSystem();
+
+			// Spawn a new particle system instance
+			HitParticlesComponent->SetTemplate(Template_Fire);
+			HitParticlesComponent->ActivateSystem();
+		}
 	}
+	
+
+	
 }
 
 void AZombieRunner::DisableCollision()
