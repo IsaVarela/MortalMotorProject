@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
  
 
 
@@ -67,6 +68,15 @@ void APlayerMotorCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void APlayerMotorCar::HandleGoldCollected()
 {
 	GoldAmount++;
+
+	//Play SFX sound For gold collected
+	
+	if (GoldCollectSoundCue)
+	{
+		float startTime = FMath::RandRange(0.f, 1.f);
+		UGameplayStatics::PlaySoundAtLocation(this, GoldCollectSoundCue, GetActorLocation(), 1.f, 1.f, startTime);
+	}
+	
 
 	if (ExpCurveFloat == nullptr) { return; }
 	float currentValue = ExpCurveFloat->GetFloatValue(GoldAmount);

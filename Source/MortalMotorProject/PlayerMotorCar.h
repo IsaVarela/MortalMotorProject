@@ -56,6 +56,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	int Level;
 
+	//SFX
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* GoldCollectSoundCue;
+
 	 
 	UPlayerUI* PlayerUI;
 

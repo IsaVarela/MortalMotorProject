@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "IDamageable.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 AMinigun::AMinigun():
@@ -29,6 +30,10 @@ AMinigun::AMinigun():
 	ShootVfxComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootVFX"));
 	ShootVfxComponent->bAutoActivate = false;
 	ShootVfxComponent->SetupAttachment(TurretBody);
+
+	//SFX
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MiniGunSFX"));
+	AudioComponent->bAutoActivate = false;
 }
 
 void AMinigun::BeginPlay()
@@ -143,6 +148,12 @@ void AMinigun::Shoot()
 {
 	if (Target == nullptr) { return; }
 
+	if (!AudioComponent->IsPlaying()) 
+	{
+		AudioComponent->Play();
+	}
+	
+
 	IIDamageable* Damageable = Cast<IIDamageable>(Target);
 	ShootVfxComponent->Activate();
 
@@ -163,6 +174,7 @@ void AMinigun::Shoot()
 
 void AMinigun::StopShoot()
 {
+	AudioComponent->Stop();
 	ShootVfxComponent->Deactivate();
 }
 

@@ -54,8 +54,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "VFX")
 	UParticleSystemComponent* ShootVfxComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "VFX")
-	UParticleSystemComponent* SmokeVfxComponent;
+	UPROPERTY(EditDefaultsOnly, Category = "SFX")
+	UAudioComponent* AudioComponent;
 
 	float m_searchTimer;
 	float m_attackTimer;
