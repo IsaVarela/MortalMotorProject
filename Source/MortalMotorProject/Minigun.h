@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Minigun.generated.h"
 
+class UNiagaraComponent;
+
 UCLASS()
 class MORTALMOTORPROJECT_API AMinigun : public AActor
 {
@@ -53,6 +55,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "VFX")
 	UParticleSystemComponent* ShootVfxComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "VFX")
+	UNiagaraComponent* NiagaraComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "SFX")
 	UAudioComponent* AudioComponent;

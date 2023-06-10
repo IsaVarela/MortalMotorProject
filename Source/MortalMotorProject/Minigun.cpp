@@ -6,6 +6,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "IDamageable.h"
 #include "Components/AudioComponent.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 AMinigun::AMinigun():
@@ -30,6 +31,10 @@ AMinigun::AMinigun():
 	ShootVfxComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootVFX"));
 	ShootVfxComponent->bAutoActivate = false;
 	ShootVfxComponent->SetupAttachment(TurretBody);
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BulletShells"));
+	NiagaraComponent->bAutoActivate = false;
+	NiagaraComponent->SetupAttachment(TurretBody);
 
 	//SFX
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MiniGunSFX"));
@@ -152,6 +157,8 @@ void AMinigun::Shoot()
 	{
 		AudioComponent->Play();
 	}
+
+	NiagaraComponent->Activate();
 	
 
 	IIDamageable* Damageable = Cast<IIDamageable>(Target);
@@ -176,5 +183,6 @@ void AMinigun::StopShoot()
 {
 	AudioComponent->Stop();
 	ShootVfxComponent->Deactivate();
+	NiagaraComponent->Deactivate();
 }
 
