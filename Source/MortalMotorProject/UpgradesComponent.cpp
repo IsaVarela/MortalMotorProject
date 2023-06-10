@@ -4,6 +4,7 @@
 #include "UpgradesComponent.h"
 #include "Minigun.h"
 #include "LandMineSpawner.h"
+#include "FlameThrower.h"
 
 // Sets default values for this component's properties
 UUpgradesComponent::UUpgradesComponent()
@@ -33,6 +34,10 @@ void UUpgradesComponent::BeginPlay()
 		{
 			m_MinesSpawner = Cast<ALandMineSpawner>(ChildActor);
 		}
+		if (ChildActor->IsA(AFlameThrower::StaticClass()))
+		{
+			m_FlameThrower = Cast<AFlameThrower>(ChildActor); 
+		}
 	}
 }
 
@@ -58,6 +63,15 @@ void UUpgradesComponent::EnableMines()
 	if (m_MinesSpawner != nullptr)
 	{
 		m_MinesSpawner->EnableLandMineSpawner();
+	}
+}
+
+void UUpgradesComponent::EnableFlameThrower()
+{
+	if (m_FlameThrower != nullptr)
+	{
+		m_FlameThrower->ShowFlameThrower(); 
+		m_FlameThrower->SetActorTickEnabled(true); 
 	}
 }
 
