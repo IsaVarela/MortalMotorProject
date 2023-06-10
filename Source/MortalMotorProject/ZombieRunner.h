@@ -76,7 +76,10 @@ public:
 		UParticleSystemComponent* HitParticlesComponent;
 
 	UPROPERTY()
-		UParticleSystem* ParticleSystemTemplate;
+		UParticleSystem* Template_Blood;
+
+	UPROPERTY()
+		UParticleSystem* Template_Fire;
 
 	UPROPERTY()
 		USoundCue* SoundCueBodyFall;
@@ -92,6 +95,9 @@ public:
 
 	UPROPERTY()
 		float AttackPower;
+
+	UPROPERTY()
+		bool bIsBurned;
 
 private:
 
