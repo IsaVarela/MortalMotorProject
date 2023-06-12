@@ -19,7 +19,7 @@ AZombieRunner::AZombieRunner()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	AttackPower = 25.0f;
+	AttackPower = 5.0f;
 
 	//Get Anim montages
 	Hit_Montage01 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_03/Anim/Zombie_Reaction_Hit_01_Montage_Retargeted.Zombie_Reaction_Hit_01_Montage_Retargeted'"));
@@ -92,8 +92,9 @@ void AZombieRunner::BeginPlay()
 	bIsBurned = false;
 
 	this->GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-	this->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit); 
-	this->GetMesh()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit);
+	//this->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit);
+	this->GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZombieRunner::OnOverlapBegin);
+	//this->GetMesh()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit);
 	 
 }
 
@@ -148,7 +149,25 @@ void AZombieRunner::DestroyEnemy()
 }
 
 
-void AZombieRunner::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+//void AZombieRunner::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+//{
+//	if (OtherActor && OtherActor != this && OtherComp)
+//	{
+//		APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
+//		if (Car)
+//		{
+//			bIsCollidingWithPlayer = true;
+//			// Print collision for debugging
+//			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zombie collided with Car: %s"), bIsCollidingWithPlayer ? TEXT("true") : TEXT("false")));
+//			TakeDamge(100.0f);
+//			Car->Health(AttackPower);
+//		}
+// 
+//	}
+//}
+
+void AZombieRunner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
+	bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
@@ -161,9 +180,10 @@ void AZombieRunner::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 			TakeDamge(100.0f);
 			Car->Health(AttackPower);
 		}
- 
+
 	}
 }
+
 
 void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
 {
