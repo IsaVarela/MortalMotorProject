@@ -92,7 +92,12 @@ void AEnemySpawner::SpawnEnemies()
 		//if spawn available
 		if (element.Value == true)
 		{
-			GetWorld()->SpawnActor<AActor>(EnemyPrefab, element.Key->GetComponentLocation(), FRotator::ZeroRotator);
+			if(EnemyPrefabs.Num()> 0)
+			{
+				const int32 RandomIndex = FMath::RandRange(0, EnemyPrefabs.Num() - 1);
+				GetWorld()->SpawnActor<AActor>(EnemyPrefabs[RandomIndex], element.Key->GetComponentLocation(), FRotator::ZeroRotator);
+			}
+			
 		}
 	}
 }

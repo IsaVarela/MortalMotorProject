@@ -25,8 +25,12 @@ private:
 
 	void SpawnEnemies();
 
+	// original declaration, changed to an array to test the spawn of enemies of the same type but with different meshes.
+	/*UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> EnemyPrefab;*/
+
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor> EnemyPrefab;
+	TArray<TSubclassOf<AActor>> EnemyPrefabs;
 
 
 public:	

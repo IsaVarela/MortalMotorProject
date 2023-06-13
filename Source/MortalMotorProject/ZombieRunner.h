@@ -56,6 +56,7 @@ public:
 	void ChasePlayer(const FVector& TargetLocation) const;
 
 	void BecomeRagdoll();
+
 	void PlaySoundCueHitGround();
 
 	//function to run when the hit points reach 0
@@ -99,6 +100,19 @@ public:
 	UPROPERTY()
 		bool bIsBurned;
 
+	//These variables were made public and editable to allow more flexibility when changing meshes for the same zombie type
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		UAnimMontage* Hit_Montage01;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		UAnimMontage* Hit_Montage02;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		UAnimMontage* Death_Montage01;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		UAnimMontage* Death_Montage02;
+
 private:
 
 	UPROPERTY(EditDefaultsOnly)
@@ -109,18 +123,6 @@ private:
 
 	UPROPERTY()
 		TArray<UAnimMontage*> Death_Montages;
-	 
-	UPROPERTY()
-		UAnimMontage* Hit_Montage01;
-
-	UPROPERTY()
-		UAnimMontage* Hit_Montage02;
-
-	UPROPERTY()
-		UAnimMontage* Death_Montage01;
-
-	UPROPERTY()
-		UAnimMontage* Death_Montage02;
 
 	UPROPERTY(EditAnywhere)
 		bool bIsCollidingWithPlayer;
