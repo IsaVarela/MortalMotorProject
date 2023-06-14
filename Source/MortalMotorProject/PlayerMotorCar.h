@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
-#include "PlayerUI.h"
 #include "PlayerMotorCar.generated.h"
 
 // Delegate signature
 DECLARE_DELEGATE_OneParam(FOnGoldCollected, float);
 DECLARE_MULTICAST_DELEGATE(FOnLevelUp);
+
+class UPlayerUI;
 
 UCLASS()
 class MORTALMOTORPROJECT_API APlayerMotorCar : public AWheeledVehiclePawn
@@ -36,7 +37,6 @@ protected:
 private:
  
 	class UChaosVehicleMovementComponent* VehicleMovementComponent;
-	 
 	class USpringArmComponent* SpringArm;
 
 	void HandleGoldCollected();
@@ -45,12 +45,13 @@ private:
 	void Steer(float x);	 
 	void CameraRotation();
 
-	
+	UPROPERTY(EditDefaultsOnly)
+	class USphereComponent* KillZoneCollisionSphere;
 
 	UPROPERTY(VisibleAnywhere)
 	int GoldAmount;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly)
 	UCurveFloat* ExpCurveFloat;
 
 	UPROPERTY(VisibleAnywhere)
@@ -59,12 +60,16 @@ private:
 	//SFX
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* GoldCollectSoundCue;
-
-	 
+ 
 	UPlayerUI* PlayerUI;
 
-	UPROPERTY(BlueprintReadWrite,meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerUI> WidgetObject;
+
+	//For killzone cleanup
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		
 
 
 	

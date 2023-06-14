@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/SphereComponent.h"
  
 
 
@@ -18,31 +19,27 @@ APlayerMotorCar::APlayerMotorCar() :
 {
 	AGold::s_OnGoldCollected.BindUObject(this, &APlayerMotorCar::HandleGoldCollected);
 	PlayerHealth = 100.0f;
-}
 
-void APlayerMotorCar::Health(float damage)
-{
-	PlayerHealth = FMath::Max(0, PlayerHealth - damage);
-
-	if (PlayerUI)
-	{
-		PlayerUI->UpdateHPBar(PlayerHealth/100);
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("HP: %f"), PlayerHealth));
+	//killzone sphere
+	KillZoneCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Kill Zone Sphere"));
+	KillZoneCollisionSphere->SetupAttachment(RootComponent);
 }
 
 void APlayerMotorCar::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//creat the Widget Ui based of the WidgetObject subclass
+	//create the Widget Ui based of the WidgetObject subclass
 	PlayerUI = CreateWidget<UPlayerUI>(GetWorld(), WidgetObject);
 	//add the created UI to the viewport
 	PlayerUI->AddToViewport();
 
-	// Catch the spring arm component
+	//cache the spring arm component
 	SpringArm = FindComponentByClass<USpringArmComponent>();
 
+	FScriptDelegate ScriptDelegate;
+	ScriptDelegate.BindUFunction(this, FName("OnOverlapEnd"));
+	KillZoneCollisionSphere->OnComponentEndOverlap.Add(ScriptDelegate);
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
@@ -117,6 +114,14 @@ void APlayerMotorCar::CameraRotation()
     }
 }
 
+void APlayerMotorCar::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor)
+	{
+		OtherActor->Destroy(); //this will make them disappear on impact. Need to cast it to IDamageable and take damage instead
+	}
+}
+
 void APlayerMotorCar::Accelerate()
 {
     GetVehicleMovementComponent()->SetThrottleInput(1);
@@ -131,6 +136,18 @@ void APlayerMotorCar::Steer(float x)
 {
     GetVehicleMovement()->SetSteeringInput(x);
 }
+
+void APlayerMotorCar::Health(float damage)
+{
+	PlayerHealth = FMath::Max(0, PlayerHealth - damage);
+
+	if (PlayerUI)
+	{
+		PlayerUI->UpdateHPBar(PlayerHealth / 100);
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("HP: %f"), PlayerHealth));
+}
+
 
 
 
