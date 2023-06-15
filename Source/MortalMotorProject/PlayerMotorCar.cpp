@@ -10,7 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
- 
+#include "IDamageable.h"
 
 
 APlayerMotorCar::APlayerMotorCar() :
@@ -118,7 +118,12 @@ void APlayerMotorCar::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AAc
 {
 	if (OtherActor)
 	{
-		OtherActor->Destroy(); //this will make them disappear on impact. Need to cast it to IDamageable and take damage instead
+		IIDamageable* Enemy = Cast<IIDamageable>(OtherActor);
+		if (Enemy)
+		{
+			Enemy->TakeDamge(1000.f);
+		}
+		
 	}
 }
 
