@@ -21,13 +21,6 @@ AZombieRunner::AZombieRunner()
 
 	AttackPower = 5.0f;
 
-	//Get Anim montages
-	/*Hit_Montage01 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_02/Anim/Zombie_Reaction_Hit_01_Montage_Retargeted.Zombie_Reaction_Hit_01_Montage_Retargeted'"));
-	Hit_Montage02 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_02/Anim/Zombie_Reaction_Hit_02_Montage_Retargeted.Zombie_Reaction_Hit_02_Montage_Retargeted'"));
-	Death_Montage01 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_02/Anim/ZombieDeath_01_Montage_Retargeted.ZombieDeath_01_Montage_Retargeted'"));
-	Death_Montage02 = LoadObject<UAnimMontage>(nullptr, TEXT("/Script/Engine.AnimMontage'/Game/Juan_Active_Branch/Enemies/Zombie_02/Anim/ZombieDeath_02_Montage_Retargeted.ZombieDeath_02_Montage_Retargeted'"));*/
-
-
 	//Get particle system
 	bIsPsPlaying = false;
 	HitParticlesComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("HitEffectComponent"));
@@ -111,10 +104,9 @@ void AZombieRunner::BeginPlay()
 	bIsBurned = false;
 
 	this->GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-	//this->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit);
+
 	this->GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZombieRunner::OnOverlapBegin);
-	//this->GetMesh()->OnComponentHit.AddDynamic(this, &AZombieRunner::OnHit);
-	 
+
 }
 
 // Called every frame
@@ -126,13 +118,6 @@ void AZombieRunner::Tick(float DeltaTime)
 	{
 		ChasePlayer(Player->GetActorLocation());
 	}
-
-	
-
-	/*const FVector VehicleVelocity = Player->GetVelocity();
-	const float Speed = VehicleVelocity.Size();
-
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("RandomIndex: %f"), Speed));*/
 }
 
 
@@ -167,24 +152,6 @@ void AZombieRunner::DestroyEnemy()
 	Destroy();
 }
 
-
-//void AZombieRunner::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-//{
-//	if (OtherActor && OtherActor != this && OtherComp)
-//	{
-//		APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
-//		if (Car)
-//		{
-//			bIsCollidingWithPlayer = true;
-//			// Print collision for debugging
-//			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zombie collided with Car: %s"), bIsCollidingWithPlayer ? TEXT("true") : TEXT("false")));
-//			TakeDamge(100.0f);
-//			Car->Health(AttackPower);
-//		}
-// 
-//	}
-//}
-
 void AZombieRunner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
 	bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -202,7 +169,6 @@ void AZombieRunner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 
 	}
 }
-
 
 void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
 {
@@ -233,12 +199,12 @@ void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
 void AZombieRunner::Death()
 {
 	DisableCollision();
+
 	// command assigned directly to the character movement component it halts the object regardless of the AIController.  
 	this->GetCharacterMovement()->StopMovementImmediately();
 
 	// added a delay to the destruction of the objects inheriting from this class to allow some room to play death animations or additional code 
 	const float Delay = 4.0f;
-	
 
 	if (bIsCollidingWithPlayer)
 	{
@@ -315,9 +281,7 @@ void AZombieRunner::ParticleSystem()
 			HitParticlesComponent->ActivateSystem();
 		}
 	}
-	
 
-	
 }
 
 void AZombieRunner::DisableCollision()
