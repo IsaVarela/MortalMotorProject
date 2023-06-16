@@ -41,12 +41,10 @@ public:
 
 	/** called when something enters the trigger collision component */
 	UFUNCTION()
-	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// function to make the zombie follow the player's position
 	virtual void ChasePlayer(const FVector& TargetLocation) const;
-
-	void BecomeRagdoll();
 
 	void PlaySoundCueHitGround();
 
@@ -105,6 +103,8 @@ public:
 		UAnimMontage* Death_Montage02;
 
 private:
+
+	void BecomeRagdoll();
 
 	UPROPERTY(EditDefaultsOnly)
 		float HealthPoints = 100.f;
