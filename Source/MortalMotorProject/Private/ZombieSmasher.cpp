@@ -4,6 +4,7 @@
 #include "ZombieSmasher.h"
 
 #include "Kismet/KismetMathLibrary.h"
+#include "MortalMotorProject/PlayerMotorCar.h"
 
 AZombieSmasher::AZombieSmasher()
 {
@@ -45,7 +46,29 @@ void AZombieSmasher::ChasePlayer(const FVector& TargetLocation) const
             ZombieController->MoveToLocation(TargetLocation);
         }
 
-        
+    }
+}
+
+void AZombieSmasher::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    if (OtherActor && OtherActor != this && OtherComp)
+    {
+        APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
+        if (Car)
+        {
+            // Apply a recoil to the mesh of the car in the opposite of the forward direction.
+            UPrimitiveComponent* CarRootComponent = Car->GetMesh();
+            if (CarRootComponent && CarRootComponent->IsSimulatingPhysics())
+            {
+                const FVector RecoilDirection = -Car->GetActorForwardVector();  
+                const float RecoilForce = 5000.0f;  
+
+                CarRootComponent->AddForce(RecoilDirection * RecoilForce, NAME_None, true);
+            }
+            // Deal damage to the zombie and reduce the car's health
+            TakeDamge(0.0f);
+            Car->Health(AttackPower);
+        }
 
     }
 }
@@ -61,7 +84,6 @@ void AZombieSmasher::PositionToPlayer()
      DotProduct = playerForwardDirection.GetSafeNormal().Dot(playerToZombie.GetSafeNormal());
 
      GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("DOT: %f"), DotProduct));
-
  
 }
 
