@@ -16,28 +16,26 @@ class MORTALMOTORPROJECT_API AZombieSmasher : public AZombieRunner
 
 public:
 	AZombieSmasher();
-
-	
-
+ 
 protected:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void ChasePlayer(const FVector& TargetLocation) const override;
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-	void PositionToPlayer();
+ 
 	void Attack() const;
-	void Block() const;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="AI")
-		float BlockingRadius;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-		float AttackRadius;
-
+  
+	/*UFUNCTION()
+		void OnAttackOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);*/
+  
 	UPROPERTY()
-		float DotProduct;
+		mutable bool bIsAttacking;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		TArray<UAnimMontage*> AttackAnims;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		class USphereComponent* AttackArea;
+  
 };

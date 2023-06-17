@@ -132,7 +132,9 @@ void AZombieRunner::TakeDamge(float damage)
 		if (Hit_Montages.Num() > 0)
 		{
 			int32 RandomIndex = FMath::RandRange(0, Hit_Montages.Num() - 1);
-			ZombieAnimInstance->Montage_Play(Hit_Montages[RandomIndex], 1.0f);			 
+			ZombieAnimInstance->Montage_Play(Hit_Montages[RandomIndex], 1.0f);
+			 
+		 
 		}
 
 		if (HitParticlesComponent)
