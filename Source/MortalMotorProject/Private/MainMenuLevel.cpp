@@ -11,4 +11,6 @@ void AMainMenuLevel::BeginPlay()
 	//UE_LOG(LogTemp, Warning, TEXT("Works"));
 	MainMenuWidget = CreateWidget<UMainMenuWidget>(GetWorld()->GetFirstPlayerController(),MainMenuWidgetPrefab);
 	MainMenuWidget->AddToViewport();
-}
+
+	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+} 
