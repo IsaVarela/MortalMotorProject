@@ -151,7 +151,7 @@ void AZombieRunner::TakeDamge(float damage)
 
 void AZombieRunner::DestroyEnemy()
 {
-	Destroy();
+	//Destroy();
 }
 
 void AZombieRunner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 

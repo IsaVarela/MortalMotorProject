@@ -3,6 +3,7 @@
 
 #include "EnemySpawner.h"
 #include "Components/SphereComponent.h"
+#include "Containers/Queue.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
@@ -85,7 +86,24 @@ void AEnemySpawner::BeginPlay()
 	SouthSphere->OnComponentEndOverlap.Add(ScriptDelegate);
 }
 
-void AEnemySpawner::SpawnEnemies()
+void AEnemySpawner::SpawnEnemy()
+{
+	//if the pool is not full yet, create new objects
+	if (m_poolSize < c_MaxActorsInPool)
+	{
+		BruteForceSpawnEnemies();
+		UE_LOG(LogTemp, Warning, TEXT("BruteSpawn"));
+	}
+
+	//if the Pool is full, dequeue from pool
+	else
+	{
+		SpawnFromPool();
+		UE_LOG(LogTemp, Warning, TEXT("Pool"));
+	}
+}
+
+void AEnemySpawner::BruteForceSpawnEnemies()
 {
 	for (const auto& element : MSpawnPointsMap)
 	{
@@ -95,11 +113,39 @@ void AEnemySpawner::SpawnEnemies()
 			if(EnemyPrefabs.Num()> 0)
 			{
 				const int32 RandomIndex = FMath::RandRange(0, EnemyPrefabs.Num() - 1);
-				GetWorld()->SpawnActor<AActor>(EnemyPrefabs[RandomIndex], element.Key->GetComponentLocation(), FRotator::ZeroRotator);
+				AActor* createdActor = GetWorld()->SpawnActor<AActor>(EnemyPrefabs[RandomIndex], element.Key->GetComponentLocation(), FRotator::ZeroRotator);
+				Pool.Enqueue(createdActor);
+				m_poolSize++;
+				m_spawnedActorsInScene++;
 			}
 			
 		}
 	}
+}
+
+void AEnemySpawner::SpawnFromPool()
+{
+	for (const auto& element : MSpawnPointsMap)
+	{
+		//if spawn available
+		if (element.Value == true)
+		{
+			if (EnemyPrefabs.Num() > 0)
+			{
+				m_spawnedActorsInScene++;
+				AActor* returned = nullptr;
+				Pool.Dequeue(returned);
+				returned->SetActorLocation(element.Key->GetComponentLocation());
+				Pool.Enqueue(returned);
+			}
+
+		}
+	}
+}
+
+bool AEnemySpawner::IsSceneFull() const
+{
+	return m_spawnedActorsInScene >= c_MaxSpawnActorsInScene;
 }
 
 // Called every frame
@@ -111,7 +157,7 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 	if (Timer >= 5.f)
 	{
-		SpawnEnemies();
+		SpawnEnemy();
 		Timer = 0.f;
 	}
 
