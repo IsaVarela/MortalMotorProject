@@ -54,7 +54,7 @@ public:
 
 	void DisableCollision();
 
-	virtual void ResetEnemy() override;
+	virtual void ResetEnemy(FVector SpawnLocation) override;
 
 	UPROPERTY()
 		AAIController* ZombieController;
