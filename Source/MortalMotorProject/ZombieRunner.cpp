@@ -289,8 +289,9 @@ void AZombieRunner::DisableCollision()
 	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void AZombieRunner::ResetEnemy()
+void AZombieRunner::ResetEnemy(FVector SpawnLocation)
 {
+	this->SetActorLocation(SpawnLocation);
 	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	//this->GetCharacterMovement()->SetMovementMode(MOVE_Walking);  //-> this doesnt appear to be doing anything
 	 
@@ -336,9 +337,7 @@ void AZombieRunner::BecomeRagdoll()
 	GetMesh()->SetSimulatePhysics(true);
 	//DisableCollision();
  
-	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueHitCar, this->GetActorLocation());
-	}
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueHitCar, this->GetActorLocation());
 }
 
 void AZombieRunner::KillEnemy()
@@ -351,9 +350,6 @@ void AZombieRunner::KillEnemy()
 		SetActorHiddenInGame(true);
 		MortalGameMode->GetEnemySpawner()->PutEnemyBackInThePool(this);
 	}
-
-	ResetEnemy();
-	
 }
 
 void AZombieRunner::PlaySoundCueHitGround()

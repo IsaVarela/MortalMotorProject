@@ -24,5 +24,5 @@ public:
 	virtual void TakeDamge(float damage) = 0;
 	virtual bool IsAlive() const = 0;
 
-	virtual void ResetEnemy() = 0;
+	virtual void ResetEnemy(FVector SpawnLocation) = 0;
 };

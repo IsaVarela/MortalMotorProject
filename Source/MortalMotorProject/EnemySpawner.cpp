@@ -94,14 +94,12 @@ void AEnemySpawner::SpawnEnemy()
 	if (m_poolSize < c_MaxActorsInPool)
 	{
 		BruteForceSpawnEnemies();
-		UE_LOG(LogTemp, Warning, TEXT("BruteSpawn"));
 	}
 
 	//if the Pool is full, dequeue from pool
 	else if(!Pool.IsEmpty())
 	{
 		SpawnFromPool();
-		UE_LOG(LogTemp, Warning, TEXT("Pool"));
 	}
 }
 
@@ -145,7 +143,7 @@ void AEnemySpawner::SpawnFromPool()
 				IIDamageable* Enemy = Cast<IIDamageable>(returned);
 				if (Enemy)
 				{
-					Enemy->ResetEnemy();
+					Enemy->ResetEnemy(element.Key->GetComponentLocation());
 				}
 			
 
