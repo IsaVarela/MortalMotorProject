@@ -8,6 +8,7 @@
 
 struct FCoreSkill;
 class USkillsWidget;
+class AEnemySpawner;
 
 UCLASS()
 class MORTALMOTORPROJECT_API AMortalMortarGameMode : public AGameModeBase
@@ -23,7 +24,9 @@ private:
 	class APlayerController* m_PlayerController;
 	class APlayerMotorCar* m_Player;
 	class UUpgradesComponent* m_UpgradeComponent;
+
 	USkillsWidget* m_SkillWidget;
+	AEnemySpawner* m_EnemySpawner;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USkillsWidget> SkillWidgetTemplate;
@@ -48,8 +51,6 @@ private:
 	void ActivateSkillUI();
 
 public:
-	
-
 	//Core Skills
 	UFUNCTION()
 	void ActivateMinigun();
@@ -74,4 +75,5 @@ public:
 
 	void RemoveSelectedCoreSkill(TSharedPtr <FCoreSkill> SkillToRemove);
 	void AddSkillsToPool(TSharedPtr <FCoreSkill> SkillToAdd);
+	AEnemySpawner* GetEnemySpawner() const;
 };

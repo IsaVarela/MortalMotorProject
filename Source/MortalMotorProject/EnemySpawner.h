@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <queue>
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "EnemySpawner.generated.h"
@@ -27,28 +26,24 @@ private:
 	void SpawnEnemy();
 	void BruteForceSpawnEnemies();
 	void SpawnFromPool();
-	bool IsSceneFull() const;
 
-	// original declaration, changed to an array to test the spawn of enemies of the same type but with different meshes.
-	/*UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor> EnemyPrefab;*/
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<AActor>> EnemyPrefabs;
 
-	//Pool of spawned Actors
-	//TQueue<AActor*> Pool;
 	TQueue<AActor*> Pool;
 
-	const int c_MaxSpawnActorsInScene = 5;
-	const int c_MaxActorsInPool = 5;
+	const int c_MaxSpawnActorsInScene = 4;
+	const int c_MaxActorsInPool = 4;
+
 	int m_spawnedActorsInScene = 0;
 	int m_poolSize = 0;
 
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void PutEnemyBackInThePool(AActor* enemy);
 
 	UPROPERTY(EditDefaultsOnly)
 	USceneComponent* RootSceneComponent;

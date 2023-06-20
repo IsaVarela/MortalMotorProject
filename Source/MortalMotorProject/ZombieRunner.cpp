@@ -12,6 +12,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Sound/SoundCue.h"
 #include "Sound/SoundWave.h"
+#include "MortalMortarGameMode.h"
+#include "EnemySpawner.h"
 
 // Sets default values
 AZombieRunner::AZombieRunner()
@@ -139,7 +141,7 @@ void AZombieRunner::TakeDamge(float damage)
 
 		if (HitParticlesComponent)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("PARTICLE EFFECTS PLAY"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("PARTICLE EFFECTS PLAY"));
 			ParticleSystem();
 		}
 	}
@@ -147,11 +149,6 @@ void AZombieRunner::TakeDamge(float damage)
 	{
 		Death();
 	}
-}
-
-void AZombieRunner::DestroyEnemy()
-{
-	//Destroy();
 }
 
 void AZombieRunner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
@@ -164,7 +161,7 @@ void AZombieRunner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 		{
 			bIsCollidingWithPlayer = true;
 			// Print collision for debugging
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zombie collided with Car: %s"), bIsCollidingWithPlayer ? TEXT("true") : TEXT("false")));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zombie collided with Car: %s"), bIsCollidingWithPlayer ? TEXT("true") : TEXT("false")));
 			TakeDamge(100.0f);
 			Car->Health(AttackPower);
 		}
@@ -202,11 +199,9 @@ void AZombieRunner::Death()
 {
 	DisableCollision();
 
-	// command assigned directly to the character movement component it halts the object regardless of the AIController.  
+	//command assigned directly to the character movement component it halts the object regardless of the AIController.  
 	this->GetCharacterMovement()->StopMovementImmediately();
-
-	// added a delay to the destruction of the objects inheriting from this class to allow some room to play death animations or additional code 
-	const float Delay = 4.0f;
+	
 
 	if (bIsCollidingWithPlayer)
 	{
@@ -214,6 +209,8 @@ void AZombieRunner::Death()
 		{
 			ParticleSystem();		 
 		}
+
+		//BECOME RAGDOLL
 		BecomeRagdoll();
 
 		if(SoundCueBodyFall)
@@ -221,9 +218,7 @@ void AZombieRunner::Death()
 			//float Cue1duration = SoundCueHitCar->Duration;  // should use some way of collision detection instead of time
 			FTimerHandle TimerHandle;
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &AZombieRunner::PlaySoundCueHitGround, 1.0f, false);
-
 		}
- 
 	}
 	else
 	{
@@ -234,9 +229,10 @@ void AZombieRunner::Death()
 		}
 	}
 
-
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AZombieRunner::DestroyEnemy, Delay, false);
+	//Delay before Hiding the enemy
+	float Delay = 4.0f;
+	FTimerHandle TimerHandle_DeathCount;
+	GetWorldTimerManager().SetTimer(TimerHandle_DeathCount, this, &AZombieRunner::KillEnemy, Delay, false);
 }
 
 //This function was added to replay the PS every time it is called instead of waiting for it to finish its regular lifetime before calling again
@@ -291,17 +287,37 @@ void AZombieRunner::DisableCollision()
 	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void AZombieRunner::ResetEnemy()
+{
+	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	this->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	SetActorHiddenInGame(false);
+	HealthPoints = 100.f; //or any max health per zombie type;
+}
+
+
 // set the zombie to ragdoll collision type and set simulate physics to true 
 void AZombieRunner::BecomeRagdoll()
 {
 	const ECollisionChannel CollisionObjectType = ECC_PhysicsBody;
 	GetMesh()->SetCollisionObjectType(CollisionObjectType);
 	GetMesh()->SetSimulatePhysics(true);
-	DisableCollision();
+	//DisableCollision();
 
 	if (SoundCueHitCar)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueHitCar, this->GetActorLocation());
+	}
+}
+
+void AZombieRunner::KillEnemy()
+{
+	//PUT ENEMY IN POOL
+	AMortalMortarGameMode* MortalGameMode = Cast<AMortalMortarGameMode>(GetWorld()->GetAuthGameMode());
+	if (MortalGameMode)
+	{
+		SetActorHiddenInGame(true);
+		MortalGameMode->GetEnemySpawner()->PutEnemyBackInThePool(this);
 	}
 }
 

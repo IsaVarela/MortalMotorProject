@@ -4,6 +4,8 @@
 #include "EnemySpawner.h"
 #include "Components/SphereComponent.h"
 #include "Containers/Queue.h"
+#include "IDamageable.h"
+
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
@@ -96,7 +98,7 @@ void AEnemySpawner::SpawnEnemy()
 	}
 
 	//if the Pool is full, dequeue from pool
-	else
+	else if(!Pool.IsEmpty())
 	{
 		SpawnFromPool();
 		UE_LOG(LogTemp, Warning, TEXT("Pool"));
@@ -115,8 +117,10 @@ void AEnemySpawner::BruteForceSpawnEnemies()
 				const int32 RandomIndex = FMath::RandRange(0, EnemyPrefabs.Num() - 1);
 				AActor* createdActor = GetWorld()->SpawnActor<AActor>(EnemyPrefabs[RandomIndex], element.Key->GetComponentLocation(), FRotator::ZeroRotator);
 				Pool.Enqueue(createdActor);
+
 				m_poolSize++;
 				m_spawnedActorsInScene++;
+				return;
 			}
 			
 		}
@@ -132,20 +136,25 @@ void AEnemySpawner::SpawnFromPool()
 		{
 			if (EnemyPrefabs.Num() > 0)
 			{
-				m_spawnedActorsInScene++;
+				
+				if (Pool.IsEmpty()) { return; }
+
 				AActor* returned = nullptr;
 				Pool.Dequeue(returned);
-				returned->SetActorLocation(element.Key->GetComponentLocation());
-				Pool.Enqueue(returned);
+				
+				IIDamageable* Enemy = Cast<IIDamageable>(returned);
+				if (Enemy)
+				{
+					Enemy->ResetEnemy();
+				}
+			
+
+				m_spawnedActorsInScene++;
+				return;
 			}
 
 		}
 	}
-}
-
-bool AEnemySpawner::IsSceneFull() const
-{
-	return m_spawnedActorsInScene >= c_MaxSpawnActorsInScene;
 }
 
 // Called every frame
@@ -155,12 +164,18 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 	Timer += DeltaTime;
 
-	if (Timer >= 5.f)
+	if (Timer >= 5.f && m_spawnedActorsInScene < c_MaxSpawnActorsInScene)
 	{
 		SpawnEnemy();
 		Timer = 0.f;
 	}
 
+}
+
+void AEnemySpawner::PutEnemyBackInThePool(AActor* enemy)
+{
+	Pool.Enqueue(enemy);
+	m_spawnedActorsInScene--;
 }
 
 void AEnemySpawner::OnEastSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
