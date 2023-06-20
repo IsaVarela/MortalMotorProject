@@ -65,6 +65,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
 		UParticleSystemComponent* HitParticlesComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Transform")
+		FVector NewSize;
+
 	UPROPERTY()
 		UParticleSystem* Template_Blood;
 
@@ -88,6 +91,8 @@ public:
 
 	UPROPERTY()
 		bool bIsBurned;
+
+	
 
 	//These variables were made public and editable to allow more flexibility when changing meshes for the same zombie type
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
