@@ -14,6 +14,7 @@
 #include "Sound/SoundWave.h"
 #include "MortalMortarGameMode.h"
 #include "EnemySpawner.h"
+#include "Engine/CollisionProfile.h"
 
 // Sets default values
 AZombieRunner::AZombieRunner()
@@ -51,7 +52,7 @@ void AZombieRunner::PostInitializeComponents()
 		ZombieAnimInstance = GetMesh()->GetAnimInstance();
 	}
 
-	if (Hit_Montage01)
+		if (Hit_Montage01)
 	{
 		Hit_Montages.Add(Hit_Montage01);
 	}
@@ -115,6 +116,7 @@ void AZombieRunner::BeginPlay()
 void AZombieRunner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	 
 
 	if (Player)
 	{
@@ -131,7 +133,7 @@ void AZombieRunner::TakeDamge(float damage)
 	if (IsAlive())
 	{
 		// playing a random index from an array that contains the animations when the zombie is hit by something
-		if (Hit_Montages.Num() > 0)
+		if (Hit_Montages.Num() > 0 && ZombieAnimInstance)
 		{
 			int32 RandomIndex = FMath::RandRange(0, Hit_Montages.Num() - 1);
 			ZombieAnimInstance->Montage_Play(Hit_Montages[RandomIndex], 1.0f);
@@ -222,7 +224,7 @@ void AZombieRunner::Death()
 	}
 	else
 	{
-		if (Death_Montages.Num() > 0)
+		if (Death_Montages.Num() > 0 && ZombieAnimInstance)
 		{
 			const int32 RandomIndex = FMath::RandRange(0, Death_Montages.Num() - 1);
 			ZombieAnimInstance->Montage_Play(Death_Montages[RandomIndex], 1.0f);
@@ -290,15 +292,42 @@ void AZombieRunner::DisableCollision()
 void AZombieRunner::ResetEnemy()
 {
 	this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	this->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	//this->GetCharacterMovement()->SetMovementMode(MOVE_Walking);  //-> this doesnt appear to be doing anything
+	 
 	SetActorHiddenInGame(false);
 	HealthPoints = 100.f; //or any max health per zombie type;
+
+	if (bIsCollidingWithPlayer)
+	{
+		const ECollisionChannel CollisionObjectType = ECC_GameTraceChannel3; // this is the trace channel associated with Enemy collision type
+		GetMesh()->SetSimulatePhysics(false);
+		GetMesh()->SetCollisionObjectType(CollisionObjectType);
+		
+
+		
+		GetMesh()->SetRelativeTransform(GetCapsuleComponent()->GetRelativeTransform());
+	 
+ 
+		bIsCollidingWithPlayer = false;
+
+		 
+	
+	} 
+		 
+	 else
+	{
+		if(ZombieAnimInstance)
+		ZombieAnimInstance->Montage_Stop(0, nullptr);
+	}
+ 
+ 
 }
 
 
 // set the zombie to ragdoll collision type and set simulate physics to true 
 void AZombieRunner::BecomeRagdoll()
 {
+	 
 	const ECollisionChannel CollisionObjectType = ECC_PhysicsBody;
 	GetMesh()->SetCollisionObjectType(CollisionObjectType);
 	GetMesh()->SetSimulatePhysics(true);
@@ -312,6 +341,7 @@ void AZombieRunner::BecomeRagdoll()
 
 void AZombieRunner::KillEnemy()
 {
+
 	//PUT ENEMY IN POOL
 	AMortalMortarGameMode* MortalGameMode = Cast<AMortalMortarGameMode>(GetWorld()->GetAuthGameMode());
 	if (MortalGameMode)
@@ -319,6 +349,9 @@ void AZombieRunner::KillEnemy()
 		SetActorHiddenInGame(true);
 		MortalGameMode->GetEnemySpawner()->PutEnemyBackInThePool(this);
 	}
+
+	ResetEnemy();
+	
 }
 
 void AZombieRunner::PlaySoundCueHitGround()
