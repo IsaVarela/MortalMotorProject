@@ -35,8 +35,6 @@ public:
 	//overrides for the IDamageable interface 
 	virtual void TakeDamge(float damage) override;
 
-	virtual void DestroyEnemy() override;
-
 	virtual bool IsAlive() const override { return HealthPoints > 0; }
 
 	/** called when something enters the trigger collision component */
@@ -55,6 +53,8 @@ public:
 	void ParticleSystem();
 
 	void DisableCollision();
+
+	virtual void ResetEnemy() override;
 
 	UPROPERTY()
 		AAIController* ZombieController;
@@ -105,6 +105,7 @@ public:
 private:
 
 	void BecomeRagdoll();
+	void KillEnemy(); //disables the enemy, hides it and puts it back in the pool
 
 	UPROPERTY(EditDefaultsOnly)
 		float HealthPoints = 100.f;

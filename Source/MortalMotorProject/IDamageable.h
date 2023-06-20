@@ -22,6 +22,7 @@ class MORTALMOTORPROJECT_API IIDamageable
 
 public:
 	virtual void TakeDamge(float damage) = 0;
-	virtual void DestroyEnemy() = 0;
 	virtual bool IsAlive() const = 0;
+
+	virtual void ResetEnemy() = 0;
 };

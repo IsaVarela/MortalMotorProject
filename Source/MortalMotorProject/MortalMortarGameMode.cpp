@@ -7,6 +7,7 @@
 #include "CoreSkill.h"
 #include "SkillsWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "EnemySpawner.h"
 
 
 void AMortalMortarGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -32,6 +33,19 @@ void AMortalMortarGameMode::BeginPlay()
 			m_Player->OnLevelUpDelegate.AddUFunction(this, FName("IncrementQueueCount"));
 
 			m_UpgradeComponent = Cast<UUpgradesComponent>(m_Player->GetComponentByClass(UUpgradesComponent::StaticClass()));
+
+
+			TArray<AActor*> OutArray;
+			m_Player->GetAttachedActors(OutArray);
+
+			//find the enemy spawner
+			for (const auto& ele : OutArray)
+			{
+				m_EnemySpawner = Cast<AEnemySpawner>(ele);
+				if (m_EnemySpawner){ break;}
+			}
+
+			if(m_EnemySpawner == nullptr){ UE_LOG(LogTemp, Warning, TEXT("NO ENEMY SPAWNER WAS FOUND")); }
 		}
 	}
 
@@ -160,6 +174,11 @@ void AMortalMortarGameMode::RemoveSelectedCoreSkill(TSharedPtr<FCoreSkill> Skill
 void AMortalMortarGameMode::AddSkillsToPool(TSharedPtr<FCoreSkill> SkillToAdd)
 {
 	m_AllCoreSkills.Add(SkillToAdd);
+}
+
+AEnemySpawner* AMortalMortarGameMode::GetEnemySpawner() const
+{
+	return m_EnemySpawner;
 }
 
 void AMortalMortarGameMode::ActivateNitro()
