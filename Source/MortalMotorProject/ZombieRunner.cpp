@@ -302,16 +302,21 @@ void AZombieRunner::ResetEnemy()
 		const ECollisionChannel CollisionObjectType = ECC_GameTraceChannel3; // this is the trace channel associated with Enemy collision type
 		GetMesh()->SetSimulatePhysics(false);
 		GetMesh()->SetCollisionObjectType(CollisionObjectType);
-		
 
+		// to get the mesh to follow the capsule again, it was necessary to refresh the attachment of the mesh to the capsule while maintaining the original stored identity transform
+		// otherwise the mesh keeps duplicating in size
+		GetMesh()->SetRelativeTransform(FTransform::Identity);
+		GetMesh()->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+
+		// it is necessary to manually add the offsets in rotation, scale and location again after reattachment otherwise the mesh will float above with default values. 
+		FRotator NewRotation = FRotator(0.0f, -90.0f, 0.0f);   
+		FVector NewRelativeLocation = FVector(-25.0f, 0.0f, -90.0f);   
 		
-		GetMesh()->SetRelativeTransform(GetCapsuleComponent()->GetRelativeTransform());
-	 
- 
+		// Set values for the mesh
+		GetMesh()->SetRelativeRotation(NewRotation);
+		GetMesh()->SetRelativeLocation(NewRelativeLocation);
+		GetMesh()->SetRelativeScale3D(NewSize); // new size is public since each zombie variant has a different mesh size adjust in bp 
 		bIsCollidingWithPlayer = false;
-
-		 
-	
 	} 
 		 
 	 else
@@ -319,21 +324,18 @@ void AZombieRunner::ResetEnemy()
 		if(ZombieAnimInstance)
 		ZombieAnimInstance->Montage_Stop(0, nullptr);
 	}
- 
- 
 }
 
 
 // set the zombie to ragdoll collision type and set simulate physics to true 
 void AZombieRunner::BecomeRagdoll()
 {
-	 
+
 	const ECollisionChannel CollisionObjectType = ECC_PhysicsBody;
 	GetMesh()->SetCollisionObjectType(CollisionObjectType);
 	GetMesh()->SetSimulatePhysics(true);
 	//DisableCollision();
-
-	if (SoundCueHitCar)
+ 
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueHitCar, this->GetActorLocation());
 	}
