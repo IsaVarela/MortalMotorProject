@@ -127,8 +127,10 @@ void AZombieRunner::Tick(float DeltaTime)
 
 void AZombieRunner::TakeDamge(float damage)
 {
+	if (!IsAlive()) { return; }
 
 	HealthPoints = FMath::Max(0, HealthPoints - damage);
+	
 	// rewrote this part to use the IsAlive function since it already returns the hitpoint count
 	if (IsAlive())
 	{
@@ -320,7 +322,7 @@ void AZombieRunner::ResetEnemy(FVector SpawnLocation)
 		bIsCollidingWithPlayer = false;
 	} 
 		 
-	 else
+	else
 	{
 		if(ZombieAnimInstance)
 		ZombieAnimInstance->Montage_Stop(0, nullptr);
@@ -342,7 +344,6 @@ void AZombieRunner::BecomeRagdoll()
 
 void AZombieRunner::KillEnemy()
 {
-
 	//PUT ENEMY IN POOL
 	AMortalMortarGameMode* MortalGameMode = Cast<AMortalMortarGameMode>(GetWorld()->GetAuthGameMode());
 	if (MortalGameMode)

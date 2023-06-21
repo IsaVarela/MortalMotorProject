@@ -121,8 +121,8 @@ private:
 	UPROPERTY()
 		TArray<UAnimMontage*> Death_Montages;
 
-	UPROPERTY(EditAnywhere)
-		bool bIsCollidingWithPlayer;
+
+		bool bIsCollidingWithPlayer; //killed by collision
 
 	UPROPERTY(EditAnywhere)
 		bool bIsPsPlaying;

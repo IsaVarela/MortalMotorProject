@@ -91,7 +91,7 @@ void AEnemySpawner::BeginPlay()
 void AEnemySpawner::SpawnEnemy()
 {
 	//if the pool is not full yet, create new objects
-	if (m_poolSize < c_MaxActorsInPool)
+	if (!bMaxSpawnReached)
 	{
 		BruteForceSpawnEnemies();
 	}
@@ -114,10 +114,13 @@ void AEnemySpawner::BruteForceSpawnEnemies()
 			{
 				const int32 RandomIndex = FMath::RandRange(0, EnemyPrefabs.Num() - 1);
 				AActor* createdActor = GetWorld()->SpawnActor<AActor>(EnemyPrefabs[RandomIndex], element.Key->GetComponentLocation(), FRotator::ZeroRotator);
-				Pool.Enqueue(createdActor);
 
-				m_poolSize++;
 				m_spawnedActorsInScene++;
+				m_InitialspawnedActors++;
+				if (m_InitialspawnedActors == c_MaxActorsInPool)
+				{
+					bMaxSpawnReached = true;
+				}
 				return;
 			}
 			
@@ -137,20 +140,18 @@ void AEnemySpawner::SpawnFromPool()
 				
 				if (Pool.IsEmpty()) { return; }
 
-				AActor* returned = nullptr;
-				Pool.Dequeue(returned);
-				
-				IIDamageable* Enemy = Cast<IIDamageable>(returned);
-				if (Enemy)
+				auto temp =  Pool.Peek();
+
+				IIDamageable* Enemy = Cast<IIDamageable>(*temp);
+				if (Enemy && !Enemy->IsAlive())
 				{
+					//UE_LOG(LogTemp, Warning, TEXT("spawn from pool, the enemy is dead %s"), *(*temp)->GetName());
 					Enemy->ResetEnemy(element.Key->GetComponentLocation());
-				}
-			
-
-				m_spawnedActorsInScene++;
-				return;
+					Pool.Dequeue(*temp);
+					m_spawnedActorsInScene++;
+					return;
+				}	
 			}
-
 		}
 	}
 }
@@ -162,7 +163,7 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 	Timer += DeltaTime;
 
-	if (Timer >= 5.f && m_spawnedActorsInScene < c_MaxSpawnActorsInScene)
+	if (Timer >= 1.f && m_spawnedActorsInScene < c_MaxSpawnActorsInScene)
 	{
 		SpawnEnemy();
 		Timer = 0.f;
@@ -172,6 +173,7 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 void AEnemySpawner::PutEnemyBackInThePool(AActor* enemy)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("Enemy died, adding him to the pool name: %s"), *enemy->GetName());
 	Pool.Enqueue(enemy);
 	m_spawnedActorsInScene--;
 }
