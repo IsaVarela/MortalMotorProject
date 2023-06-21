@@ -33,11 +33,12 @@ private:
 
 	TQueue<AActor*> Pool;
 
-	const int c_MaxSpawnActorsInScene = 4;
-	const int c_MaxActorsInPool = 4;
+	const int c_MaxSpawnActorsInScene = 15; //should always be same or less then MAX_ACTORS_IN_POOL
+	const int c_MaxActorsInPool = 15;
 
 	int m_spawnedActorsInScene = 0;
-	int m_poolSize = 0;
+	int m_InitialspawnedActors = 0;
+	bool bMaxSpawnReached;
 
 
 public:	
