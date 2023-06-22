@@ -16,6 +16,11 @@ class MORTALMOTORPROJECT_API AZombieSmasher : public AZombieRunner
 
 public:
 	AZombieSmasher();
+
+	UPROPERTY()
+		mutable bool bInAttackCollider;
+
+	void AttackPlayer(AActor* OtherActor, float RecoilForce);
  
 protected:
 
@@ -24,13 +29,13 @@ protected:
 	virtual void ChasePlayer(const FVector& TargetLocation) const override;
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
  
-	void Attack() const;
-  
-	/*UFUNCTION()
-		void OnAttackOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);*/
-  
-	UPROPERTY()
-		mutable bool bIsAttacking;
+	void PlayAttackAnim() const;
+
+	UFUNCTION()
+		void OnAttackOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		void OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+						 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		TArray<UAnimMontage*> AttackAnims;
