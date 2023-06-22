@@ -337,7 +337,7 @@ void AZombieRunner::BecomeRagdoll()
 	const ECollisionChannel CollisionObjectType = ECC_PhysicsBody;
 	GetMesh()->SetCollisionObjectType(CollisionObjectType);
 	GetMesh()->SetSimulatePhysics(true);
-	//DisableCollision();
+	DisableCollision();
  
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCueHitCar, this->GetActorLocation());
 }
