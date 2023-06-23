@@ -11,7 +11,9 @@ AZombieSmasher::AZombieSmasher()
     // Create the left arm collision component
     AttackArea = CreateDefaultSubobject<USphereComponent>(TEXT("AttackCollision"));
     AttackArea->SetupAttachment(GetMesh(), "AttackArea");
- 
+
+    bInAttackCollider = false;
+
 }
 
 void AZombieSmasher::BeginPlay()
@@ -36,7 +38,7 @@ void AZombieSmasher::ChasePlayer(const FVector& TargetLocation) const
 	 
     if (ZombieController && IsAlive() && !ZombieAnimInstance->IsAnyMontagePlaying())
     {
-        bInAttackCollider = false;       
+         
     	// GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("Zombie is chasing"));
     	ZombieController->MoveToLocation(TargetLocation);
     }
@@ -60,7 +62,7 @@ void AZombieSmasher::PlayAttackAnim() const
 }
  
   
-void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce)
+void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float AttackDamage)
 {
 	APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
 	if (Car)
@@ -71,7 +73,7 @@ void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce)
 			
 			const FVector RecoilDirection = this->GetActorForwardVector();
 			CarRootComponent->AddImpulse(RecoilDirection * RecoilForce, EName::None, true);
-			//Car->Health(AttackPower);
+			Car->Health(AttackDamage);
 		}
 	}
 }
@@ -80,7 +82,7 @@ void AZombieSmasher::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 {
     if (OtherActor && OtherActor != this && OtherComp)
     {
-        AttackPlayer(OtherActor, 100.0f);
+        AttackPlayer(OtherActor, 100.0f, 0.0f);
         PlayAttackAnim();
     }
 }
@@ -91,10 +93,10 @@ void AZombieSmasher::OnAttackOverlap(UPrimitiveComponent* OverlappedComp, AActor
 
     if (OtherActor && OtherActor != this && OtherComp)
     {
+        
         APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
         if (Car)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Blue, TEXT("IN ATTACK AREA"));
             bInAttackCollider = true;
             GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Reading from overlap boolean: %s"), bInAttackCollider ? TEXT("True") : TEXT("False")));
         }
@@ -108,7 +110,7 @@ void AZombieSmasher::OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, AAc
         APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
         if (Car)
         {
-           // bInAttackCollider = false;
+            bInAttackCollider = false;
             GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("LEFT ATTACK AREA"));
         }
     }

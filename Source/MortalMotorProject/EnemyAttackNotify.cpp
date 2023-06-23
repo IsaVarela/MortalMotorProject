@@ -12,17 +12,18 @@ void UEnemyAttackNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	{
 		AZombieSmasher* Enemy = Cast<AZombieSmasher>(MeshComp->GetOwner());
 
-		if (Enemy != nullptr)
+		if (Enemy != nullptr && Enemy->bInAttackCollider)
 		{
+			 
 			FString ActorName = Enemy->GetName();
 			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Orange, FString::Printf(TEXT("Actor name: %s"), *ActorName));
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("boolean: %s"), Enemy->bInAttackCollider ? TEXT("True") : TEXT("False")));
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("boolean: %s"), Enemy->bInAttackCollider ? TEXT("True") : TEXT("False")));			 
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, TEXT("NOTIFY TRIGGERED ATTACK FUNCTION"));
-			Enemy->AttackPlayer(Enemy->Player, 700.f);
+			Enemy->AttackPlayer(Enemy->Player, 700.f, Enemy->AttackPower);
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, TEXT("NOTIFY DID NOT FIND A REFERENCE"));
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, TEXT("NOTIFY DID NOT FIND A REFERENCE OR PLAYER LEFT COLLIDER"));
 		}
 	}
 	

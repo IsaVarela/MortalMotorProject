@@ -17,10 +17,12 @@ class MORTALMOTORPROJECT_API AZombieSmasher : public AZombieRunner
 public:
 	AZombieSmasher();
 
-	UPROPERTY()
-		mutable bool bInAttackCollider;
+	void AttackPlayer(AActor* OtherActor, float RecoilForce, float AttackDamage);
 
-	void AttackPlayer(AActor* OtherActor, float RecoilForce);
+	UPROPERTY()
+	mutable bool bInAttackCollider;
+
+	
  
 protected:
 

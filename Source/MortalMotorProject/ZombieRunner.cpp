@@ -205,7 +205,7 @@ void AZombieRunner::Death()
 
 	//command assigned directly to the character movement component it halts the object regardless of the AIController.  
 	this->GetCharacterMovement()->StopMovementImmediately();
-	
+	HitParticlesComponent->DeactivateSystem();
 
 	if (bIsCollidingWithPlayer)
 	{
@@ -299,6 +299,7 @@ void AZombieRunner::ResetEnemy(FVector SpawnLocation)
 	 
 	SetActorHiddenInGame(false);
 	HealthPoints = 100.f; //or any max health per zombie type;
+	
 
 	if (bIsCollidingWithPlayer)
 	{
