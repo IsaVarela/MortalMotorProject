@@ -35,7 +35,7 @@ void APlayerMotorCar::BeginPlay()
 	PlayerUI->AddToViewport();
 
 	//cache the spring arm component
-	SpringArm = FindComponentByClass<USpringArmComponent>();
+	SpringArm = Cast<USpringArmComponent>(GetComponentByClass(USpringArmComponent::StaticClass()));
 
 	FScriptDelegate ScriptDelegate;
 	ScriptDelegate.BindUFunction(this, FName("OnOverlapEnd"));
@@ -103,7 +103,12 @@ void APlayerMotorCar::CameraRotation()
 
     {
         // Get the current rotation of the SpringArm
-        FRotator CurrentRotation = SpringArm->GetRelativeRotation();
+		FRotator CurrentRotation;
+		if (SpringArm)
+		{
+			CurrentRotation = SpringArm->GetRelativeRotation();
+		}
+       
 
         // Update the Z rotation based on the mouse movement  
         float RotationSpeed = 0.8f;
