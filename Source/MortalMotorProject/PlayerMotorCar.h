@@ -28,6 +28,9 @@ public:
 	UPROPERTY()
 		float PlayerHealth;
 
+	void Accelerate();
+
+	class USpringArmComponent* SpringArm;
 
 protected:
 	virtual void BeginPlay() override;
@@ -37,10 +40,8 @@ protected:
 private:
  
 	class UChaosVehicleMovementComponent* VehicleMovementComponent;
-	class USpringArmComponent* SpringArm;
 
 	void HandleGoldCollected();
-	void Accelerate();
 	void Break();
 	void Steer(float x);	 
 	void CameraRotation();
