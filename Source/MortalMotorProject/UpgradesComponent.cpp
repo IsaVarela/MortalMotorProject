@@ -5,6 +5,8 @@
 #include "Minigun.h"
 #include "LandMineSpawner.h"
 #include "FlameThrower.h"
+#include "TurboBoost.h"
+
 
 // Sets default values for this component's properties
 UUpgradesComponent::UUpgradesComponent()
@@ -37,6 +39,10 @@ void UUpgradesComponent::BeginPlay()
 		if (ChildActor->IsA(AFlameThrower::StaticClass()))
 		{
 			m_FlameThrower = Cast<AFlameThrower>(ChildActor); 
+		}
+		if (ChildActor->IsA(ATurboBoost::StaticClass()))
+		{
+			m_TurboBoost = Cast<ATurboBoost>(ChildActor); 
 		}
 	}
 }
@@ -72,6 +78,15 @@ void UUpgradesComponent::EnableFlameThrower()
 	{
 		m_FlameThrower->ShowFlameThrower(); 
 		m_FlameThrower->SetActorTickEnabled(true); 
+	}
+}
+
+void UUpgradesComponent::EnableTurboBoost()
+{
+	if (m_TurboBoost != nullptr)
+	{
+		m_TurboBoost->ActivateTurbo(); 
+		m_TurboBoost->SetActorTickEnabled(true); 
 	}
 }
 

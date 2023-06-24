@@ -9,6 +9,8 @@
 class AMinigun;
 class ALandMineSpawner;
 class AFlameThrower; 
+class ATurboBoost; 
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MORTALMOTORPROJECT_API UUpgradesComponent : public UActorComponent
@@ -27,6 +29,7 @@ private:
 	AMinigun* m_Minigun;
 	ALandMineSpawner* m_MinesSpawner;
 	AFlameThrower* m_FlameThrower; 
+	ATurboBoost* m_TurboBoost; 
 
 public:	
 	// Called every frame
@@ -35,4 +38,5 @@ public:
 	void EnableMinigun();
 	void EnableMines();
 	void EnableFlameThrower(); 
+	void EnableTurboBoost(); 
 };
