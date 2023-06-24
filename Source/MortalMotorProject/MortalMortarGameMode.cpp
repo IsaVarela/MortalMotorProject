@@ -184,6 +184,7 @@ AEnemySpawner* AMortalMortarGameMode::GetEnemySpawner() const
 void AMortalMortarGameMode::ActivateNitro()
 {
 	DisableSkillUI();
+	m_UpgradeComponent->EnableTurboBoost(); 
 }
 
 void AMortalMortarGameMode::ActivateFlameThrower()
