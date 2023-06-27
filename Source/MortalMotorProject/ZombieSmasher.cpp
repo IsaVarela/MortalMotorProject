@@ -2,8 +2,11 @@
 
 
 #include "ZombieSmasher.h"
+
+#include "Components/AudioComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "MortalMotorProject/PlayerMotorCar.h"
 
 AZombieSmasher::AZombieSmasher()
@@ -13,6 +16,7 @@ AZombieSmasher::AZombieSmasher()
     AttackArea->SetupAttachment(GetMesh(), "AttackArea");
 
     bInAttackCollider = false;
+    bIsSoundPlaying = false;
 
 }
 
@@ -74,7 +78,20 @@ void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float A
 			const FVector RecoilDirection = this->GetActorForwardVector();
 			CarRootComponent->AddImpulse(RecoilDirection * RecoilForce, EName::None, true);
 			Car->Health(AttackDamage);
-		}
+           
+        }
+            if(AttackAnims[0])
+            {
+                FTimerHandle TimerHandle;
+                GetWorldTimerManager().SetTimer(TimerHandle, [this]() {
+                    // Play the sound cue after the delay
+                    UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
+                    }, 0.4f, false);
+            }
+            else
+            {
+                UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
+            }        
 	}
 }
 
