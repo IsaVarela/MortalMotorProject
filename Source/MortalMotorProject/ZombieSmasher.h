@@ -19,6 +19,9 @@ public:
 
 	void AttackPlayer(AActor* OtherActor, float RecoilForce, float AttackDamage);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		USoundCue* AttackingSound;
+
 	UPROPERTY()
 	mutable bool bInAttackCollider;
 

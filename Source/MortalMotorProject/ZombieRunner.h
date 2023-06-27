@@ -83,7 +83,7 @@ public:
 	UPROPERTY()
 		USoundCue* SoundCueApproach;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 		UAudioComponent* AudioComponent;
 
 	UPROPERTY()
@@ -107,6 +107,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		UAnimMontage* Death_Montage02;
 
+	UPROPERTY(EditAnywhere)
+		bool bIsPsPlaying;
+
+	UPROPERTY(EditAnywhere)
+		mutable bool bIsSoundPlaying;
+
 private:
 
 	void BecomeRagdoll();
@@ -124,10 +130,6 @@ private:
 
 		bool bIsCollidingWithPlayer; //killed by collision
 
-	UPROPERTY(EditAnywhere)
-		bool bIsPsPlaying;
-
-	UPROPERTY(EditAnywhere)
-	  mutable bool bIsSoundPlaying;
+	
 
 };
