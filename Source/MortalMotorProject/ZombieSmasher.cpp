@@ -60,13 +60,13 @@ void AZombieSmasher::PlayAttackAnim() const
     {
         int32 Random = FMath::RandRange(0, AttackAnims.Num() - 1);
         ZombieAnimInstance->Montage_Play(AttackAnims[Random]);
-        
+        AnimIndex = Random;
     }
     
 }
  
   
-void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float AttackDamage)
+void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float AttackDamage, bool PlaySound)
 {
 	APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
 	if (Car)
@@ -78,20 +78,26 @@ void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float A
 			const FVector RecoilDirection = this->GetActorForwardVector();
 			CarRootComponent->AddImpulse(RecoilDirection * RecoilForce, EName::None, true);
 			Car->Health(AttackDamage);
-           
         }
-            if(AttackAnims[0])
+
+        if(PlaySound)// to play only when notify is called
+        {
+            if (AnimIndex == 0)
             {
                 FTimerHandle TimerHandle;
                 GetWorldTimerManager().SetTimer(TimerHandle, [this]() {
                     // Play the sound cue after the delay
                     UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
-                    }, 0.4f, false);
+                    }, 0.3f, false);
+
+                GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 0000"));
             }
-            else
+            else // to play when colliding or receiving punch 
             {
                 UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
-            }        
+                GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 111111"));
+            }
+        }
 	}
 }
 
@@ -99,8 +105,10 @@ void AZombieSmasher::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 {
     if (OtherActor && OtherActor != this && OtherComp)
     {
-        AttackPlayer(OtherActor, 100.0f, 0.0f);
+        AttackPlayer(OtherActor, 100.0f, 0.0f, false);
         PlayAttackAnim();
+        AudioComponent->SetSound(AttackingDefault);
+        AudioComponent->Play();
     }
 }
 
