@@ -17,13 +17,24 @@ class MORTALMOTORPROJECT_API AZombieSmasher : public AZombieRunner
 public:
 	AZombieSmasher();
 
-	void AttackPlayer(AActor* OtherActor, float RecoilForce, float AttackDamage);
+	void AttackPlayer(AActor* OtherActor, float RecoilForce, float AttackDamage, bool PlaySound);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 		USoundCue* AttackingSound;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		USoundCue* AttackingMiss;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		USoundCue* AttackingDefault;
+
+	 
+
 	UPROPERTY()
 	mutable bool bInAttackCollider;
+
+	UPROPERTY()
+	mutable int AnimIndex;
 
 	
  
