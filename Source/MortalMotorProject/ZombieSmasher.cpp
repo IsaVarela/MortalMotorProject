@@ -101,7 +101,7 @@ void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float A
         }
 	}
 
-    if(Zombie)
+    if(Zombie && Zombie->IsAlive())
     {
         Zombie->bIsCollidingWithPlayer = true;
         Zombie->TakeDamge(100);
@@ -125,17 +125,17 @@ void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float A
 
             // Calculate the force direction based on the relative position of the smasher and the smaller zombie
             FVector ForceDirection = ForwardVector + RightVector;
-            if (SmasherToZombieDirection.DotProduct(SmasherToZombieDirection,ForwardVector) < 0)
+            if (SmasherToZombieDirection.DotProduct(SmasherToZombieDirection,RightVector) < 0)
             {
                 // Zombie is behind the smasher, change the force direction to forward-left
                 ForceDirection = ForwardVector - RightVector;
             }
 
             // Add some height to the force direction
-            const float HeightScale = 0.5f; // Adjust the value to control the amount of height added
+            const float HeightScale = 0.7f; //  add height
             ForceDirection += GetActorUpVector() * HeightScale;
 
-            ZombieRootComponent->AddImpulse(ForceDirection * 60.0f, NAME_None, true);
+            ZombieRootComponent->AddImpulse(ForceDirection * 6000.0f, NAME_None, true);
             GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("SMASHER YEETING"));
         }
     }
