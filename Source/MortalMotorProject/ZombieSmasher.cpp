@@ -69,6 +69,7 @@ void AZombieSmasher::PlayAttackAnim() const
 void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float AttackDamage, bool PlaySound)
 {
 	APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
+    AZombieRunner* Zombie = Cast<AZombieRunner>(OtherActor);
 	if (Car)
 	{
 		UPrimitiveComponent* CarRootComponent = Car->GetMesh();
@@ -90,40 +91,81 @@ void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float A
                     UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
                     }, 0.3f, false);
 
-                GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 0000"));
+               // GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 0000"));
             }
             else // to play when colliding or receiving punch 
             {
                 UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
-                GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 111111"));
+                //GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 111111"));
             }
         }
 	}
+
+    if(Zombie)
+    {
+        Zombie->bIsCollidingWithPlayer = true;
+        Zombie->TakeDamge(100);
+        
+        UPrimitiveComponent* ZombieRootComponent = Zombie->GetMesh();
+        if(ZombieRootComponent && ZombieRootComponent->IsSimulatingPhysics())
+        {
+            // simple way 
+            /*const FVector RecoilDirection = this->GetActorForwardVector();
+            ZombieRootComponent->AddImpulse(RecoilDirection * 100.0f, EName::None, true);
+            GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("SMASHER COLLIDING WITH ZOMBIE ADDING FORCE"));*/
+
+            // experimental way 
+            const FVector SmasherLocation = this->GetActorLocation();
+            const FVector ZombieLocation = Zombie->GetActorLocation();
+            const FVector SmasherToZombieDirection = (ZombieLocation - SmasherLocation).GetSafeNormal();
+            const FVector ForwardVector = GetActorForwardVector();
+            const FVector RightVector = GetActorRightVector();
+
+           
+
+            // Calculate the force direction based on the relative position of the smasher and the smaller zombie
+            FVector ForceDirection = ForwardVector + RightVector;
+            if (SmasherToZombieDirection.DotProduct(SmasherToZombieDirection,ForwardVector) < 0)
+            {
+                // Zombie is behind the smasher, change the force direction to forward-left
+                ForceDirection = ForwardVector - RightVector;
+            }
+
+            // Add some height to the force direction
+            const float HeightScale = 0.5f; // Adjust the value to control the amount of height added
+            ForceDirection += GetActorUpVector() * HeightScale;
+
+            ZombieRootComponent->AddImpulse(ForceDirection * 60.0f, NAME_None, true);
+            GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, TEXT("SMASHER YEETING"));
+        }
+    }
 }
 
 void AZombieSmasher::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
     if (OtherActor && OtherActor != this && OtherComp)
     {
+        if(OtherActor == Player)
+        {
+            PlayAttackAnim();
+            AudioComponent->SetSound(AttackingDefault);
+            AudioComponent->Play();
+        }
         AttackPlayer(OtherActor, 100.0f, 0.0f, false);
-        PlayAttackAnim();
-        AudioComponent->SetSound(AttackingDefault);
-        AudioComponent->Play();
+
     }
 }
 
 void AZombieSmasher::OnAttackOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
     if (OtherActor && OtherActor != this && OtherComp)
     {
-        
         APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
         if (Car)
         {
             bInAttackCollider = true;
-            GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Reading from overlap boolean: %s"), bInAttackCollider ? TEXT("True") : TEXT("False")));
+            //GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Reading from overlap boolean: %s"), bInAttackCollider ? TEXT("True") : TEXT("False")));
         }
     }
 }
@@ -136,7 +178,7 @@ void AZombieSmasher::OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, AAc
         if (Car)
         {
             bInAttackCollider = false;
-            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("LEFT ATTACK AREA"));
+           // GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("LEFT ATTACK AREA"));
         }
     }
 }
