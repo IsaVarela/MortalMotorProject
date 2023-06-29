@@ -165,10 +165,10 @@ public:
 	void ActivateTurbo();
 
 	// change camera position 
-	void CameraPosition();
+	void CameraPosition(float deltaTime);
 
 	// reset camera position 
-	void ResetCameraPosition(); 
+	void ResetCameraPosition();
 
 private:
 

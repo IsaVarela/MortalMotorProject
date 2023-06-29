@@ -10,6 +10,7 @@ class AMinigun;
 class ALandMineSpawner;
 class AFlameThrower; 
 class ATurboBoost; 
+class APlayerMotorCar;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -30,6 +31,9 @@ private:
 	ALandMineSpawner* m_MinesSpawner;
 	AFlameThrower* m_FlameThrower; 
 	ATurboBoost* m_TurboBoost; 
+	APlayerMotorCar* m_player;
+
+	float m_healPercent = 0.2f;
 
 public:	
 	// Called every frame
@@ -39,4 +43,5 @@ public:
 	void EnableMines();
 	void EnableFlameThrower(); 
 	void EnableTurboBoost(); 
+	void EnableGenericHeal();
 };

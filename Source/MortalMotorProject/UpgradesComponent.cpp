@@ -6,6 +6,7 @@
 #include "LandMineSpawner.h"
 #include "FlameThrower.h"
 #include "TurboBoost.h"
+#include "PlayerMotorCar.h"
 
 
 // Sets default values for this component's properties
@@ -45,6 +46,13 @@ void UUpgradesComponent::BeginPlay()
 			m_TurboBoost = Cast<ATurboBoost>(ChildActor); 
 		}
 	}
+
+	m_player = Cast<APlayerMotorCar>(GetOwner());
+
+	//if (m_player)
+	//{
+	//	//UE_LOG(LogTemp, Warning, TEXT("WORKS"));
+	//}
 }
 
 
@@ -87,6 +95,14 @@ void UUpgradesComponent::EnableTurboBoost()
 	{
 		m_TurboBoost->ActivateTurbo(); 
 		m_TurboBoost->SetActorTickEnabled(true); 
+	}
+}
+
+void UUpgradesComponent::EnableGenericHeal()
+{
+	if (m_player)
+	{
+		m_player->Heal(m_healPercent);
 	}
 }
 

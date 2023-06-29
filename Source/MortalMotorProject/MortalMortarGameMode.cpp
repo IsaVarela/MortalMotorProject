@@ -81,7 +81,7 @@ void AMortalMortarGameMode::InitAllCoreSkills()
 	m_AllCoreSkills[3]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateMines);
 
 	m_GenericSkills[0]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp1);
-	m_GenericSkills[1]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp2);
+	m_GenericSkills[1]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::AddGenericHeal);
 }
 
 void AMortalMortarGameMode::IncrementQueueCount()
@@ -204,7 +204,8 @@ void AMortalMortarGameMode::GenericSkillTemp1()
 	DisableSkillUI();
 }
 
-void AMortalMortarGameMode::GenericSkillTemp2()
+void AMortalMortarGameMode::AddGenericHeal()
 {
+	m_UpgradeComponent->EnableGenericHeal();
 	DisableSkillUI();
 }

@@ -24,10 +24,7 @@ public:
 	FOnLevelUp OnLevelUpDelegate;
 
 	void Health(float damage);
-
-	UPROPERTY()
-		float PlayerHealth;
-
+	void Heal(float amount);
 	void Accelerate();
 
 	class USpringArmComponent* SpringArm;
@@ -40,6 +37,9 @@ protected:
 private:
  
 	class UChaosVehicleMovementComponent* VehicleMovementComponent;
+
+	const float MAX_HEALTH = 100.f;
+	float PlayerHealth;
 
 	void HandleGoldCollected();
 	void Break();

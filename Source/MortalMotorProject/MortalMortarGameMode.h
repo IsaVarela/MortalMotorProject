@@ -69,7 +69,7 @@ public:
 	void GenericSkillTemp1();
 
 	UFUNCTION()
-	void GenericSkillTemp2();
+	void AddGenericHeal();
 
 	TSharedPtr<FCoreSkill> GetRandomSkill();
 
