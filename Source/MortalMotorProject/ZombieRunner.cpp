@@ -15,6 +15,7 @@
 #include "MortalMortarGameMode.h"
 #include "EnemySpawner.h"
 #include "Engine/CollisionProfile.h"
+#include "ZombieSmasher.h"
 
 // Sets default values
 AZombieRunner::AZombieRunner()
@@ -161,6 +162,8 @@ void AZombieRunner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
 		APlayerMotorCar* Car = Cast<APlayerMotorCar>(OtherActor);
+		AZombieSmasher* Smasher = Cast<AZombieSmasher>(OtherActor);
+
 		if (Car)
 		{
 			bIsCollidingWithPlayer = true;
@@ -170,6 +173,11 @@ void AZombieRunner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 			Car->Health(AttackPower);
 		}
 
+		//if (Smasher)
+		//{
+		//	bIsCollidingWithPlayer = true; // can reuse this bool for triggering ragdoll behavior 
+		//	TakeDamge(100.0f);
+		//}
 	}
 }
 

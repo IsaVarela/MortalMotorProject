@@ -92,6 +92,8 @@ public:
 	UPROPERTY()
 		bool bIsBurned;
 
+	bool bIsCollidingWithPlayer; //killed by collision
+
 	
 
 	//These variables were made public and editable to allow more flexibility when changing meshes for the same zombie type
@@ -128,7 +130,7 @@ private:
 		TArray<UAnimMontage*> Death_Montages;
 
 
-		bool bIsCollidingWithPlayer; //killed by collision
+		
 
 	
 
