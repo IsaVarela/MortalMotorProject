@@ -5,10 +5,13 @@
 #include "Components/SphereComponent.h"
 #include "Containers/Queue.h"
 #include "IDamageable.h"
+#include "CollisionQueryParams.h"
 
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
+	:
+	QueryParams(FCollisionObjectQueryParams())
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -17,34 +20,23 @@ AEnemySpawner::AEnemySpawner()
 	RootComponent = RootSceneComponent;
 
 	//North
-	NorthSphere = CreateDefaultSubobject<USphereComponent>(TEXT("North"));
-	NorthSphere->SetSphereRadius(50.f);
-	NorthSphere->SetupAttachment(RootComponent);
-	NorthSphere->SetRelativeLocation(FVector(700.f, 0, 0));
-	MSpawnPointsMap.Add(NorthSphere, true);
+	NorthSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("North Spawn"));
+	NorthSpawnPoint->SetupAttachment(RootComponent);
 
 	//South
-	SouthSphere = CreateDefaultSubobject<USphereComponent>(TEXT("South"));
-	SouthSphere->SetSphereRadius(50.f);
-	SouthSphere->SetupAttachment(RootComponent);
-	SouthSphere->SetRelativeLocation(FVector(-700.f, 0, 0));
-	MSpawnPointsMap.Add(SouthSphere, true);
+	SouthSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("South Spawn"));
+	SouthSpawnPoint->SetupAttachment(RootComponent);
 
 	//West
-	WestSphere = CreateDefaultSubobject<USphereComponent>(TEXT("West"));
-	WestSphere->SetSphereRadius(50.f);
-	WestSphere->SetupAttachment(RootComponent);
-	WestSphere->SetRelativeLocation(FVector(0.f, -700.f, 0));
-	MSpawnPointsMap.Add(WestSphere, true);
+	WestSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("West Spawn"));
+	WestSpawnPoint->SetupAttachment(RootComponent);
 
 	//East
-	EastSphere = CreateDefaultSubobject<USphereComponent>(TEXT("East"));
-	EastSphere->SetSphereRadius(50.f);
-	EastSphere->SetupAttachment(RootComponent);
-	EastSphere->SetRelativeLocation(FVector(0, 700.f, 0));
-	MSpawnPointsMap.Add(EastSphere, true);
+	EastSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("East Spawn"));
+	EastSpawnPoint->SetupAttachment(RootComponent);
 
-	
+	QueryParams.AddObjectTypesToQuery(ECC_GameTraceChannel3);
+	QueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 	
 }
 
@@ -53,39 +45,11 @@ void AEnemySpawner::BeginPlay()
 { 
 	Super::BeginPlay();
 
-	FScriptDelegate ScriptDelegate;
-
-	//EAST
-	ScriptDelegate.BindUFunction(this, FName("OnEastSphereBeginOverlap"));
-	EastSphere->OnComponentBeginOverlap.Add(ScriptDelegate);
-	ScriptDelegate.Unbind();
-	
-	ScriptDelegate.BindUFunction(this, FName("OnEastEndOverlap"));
-	EastSphere->OnComponentEndOverlap.Add(ScriptDelegate);
-
-	//WEST
-	ScriptDelegate.BindUFunction(this, FName("OnWestSphereBeginOverlap"));
-	WestSphere->OnComponentBeginOverlap.Add(ScriptDelegate);
-	ScriptDelegate.Unbind();
-
-	ScriptDelegate.BindUFunction(this, FName("OnWestEndOverlap"));
-	WestSphere->OnComponentEndOverlap.Add(ScriptDelegate);
-
-	//North
-	ScriptDelegate.BindUFunction(this, FName("OnNorthSphereBeginOverlap"));
-	NorthSphere->OnComponentBeginOverlap.Add(ScriptDelegate);
-	ScriptDelegate.Unbind();
-
-	ScriptDelegate.BindUFunction(this, FName("OnNorthEndOverlap"));
-	NorthSphere->OnComponentEndOverlap.Add(ScriptDelegate);
-
-	//South
-	ScriptDelegate.BindUFunction(this, FName("OnSouthSphereBeginOverlap"));
-	SouthSphere->OnComponentBeginOverlap.Add(ScriptDelegate);
-	ScriptDelegate.Unbind();
-
-	ScriptDelegate.BindUFunction(this, FName("OnSouthEndOverlap"));
-	SouthSphere->OnComponentEndOverlap.Add(ScriptDelegate);
+	//populate array of spawn points
+	SpawnPoints.Add(NorthSpawnPoint);
+	SpawnPoints.Add(EastSpawnPoint);
+	SpawnPoints.Add(SouthSpawnPoint);
+	SpawnPoints.Add(WestSpawnPoint);
 }
 
 void AEnemySpawner::SpawnEnemy()
@@ -105,59 +69,72 @@ void AEnemySpawner::SpawnEnemy()
 
 void AEnemySpawner::BruteForceSpawnEnemies()
 {
-	for (const auto& element : MSpawnPointsMap)
+	USceneComponent* TempSpawnPoint = GetRandomSpawnPoint();
+	if (!CheckOverlap(TempSpawnPoint))
 	{
-		//if spawn available
-		if (element.Value == true)
+		if (EnemyPrefabs.Num() > 0)
 		{
-			if(EnemyPrefabs.Num()> 0)
-			{
-				const int32 RandomIndex = FMath::RandRange(0, EnemyPrefabs.Num() - 1);
-				AActor* createdActor = GetWorld()->SpawnActor<AActor>(EnemyPrefabs[RandomIndex], element.Key->GetComponentLocation(), FRotator::ZeroRotator);
+			const int32 RandomIndex = FMath::RandRange(0, EnemyPrefabs.Num() - 1);
+			AActor* createdActor = GetWorld()->SpawnActor<AActor>(EnemyPrefabs[RandomIndex], TempSpawnPoint->GetComponentLocation(), FRotator::ZeroRotator);
 
-				m_spawnedActorsInScene++;
-				m_InitialspawnedActors++;
-				if (m_InitialspawnedActors == c_MaxActorsInPool)
-				{
-					bMaxSpawnReached = true;
-				}
-				return;
+			m_spawnedActorsInScene++;
+			m_InitialspawnedActors++;
+			if (m_InitialspawnedActors == c_MaxActorsInPool)
+			{
+				bMaxSpawnReached = true;
 			}
-			
 		}
 	}
 }
 
 void AEnemySpawner::SpawnFromPool()
 {
-	for (const auto& element : MSpawnPointsMap)
+	USceneComponent* TempSpawnPoint = GetRandomSpawnPoint();
+	if (!CheckOverlap(TempSpawnPoint))
 	{
-		//if spawn available
-		if (element.Value == true)
+		if (EnemyPrefabs.Num() > 0)
 		{
-			if (EnemyPrefabs.Num() > 0)
+			if (Pool.IsEmpty()) { return; }
+
+			auto temp = Pool.Peek();
+
+			IIDamageable* Enemy = Cast<IIDamageable>(*temp);
+			if (Enemy && !Enemy->IsAlive())
 			{
-				
-				if (Pool.IsEmpty()) { return; }
-
-				auto temp =  Pool.Peek();
-
-				IIDamageable* Enemy = Cast<IIDamageable>(*temp);
-				if (Enemy && !Enemy->IsAlive())
-				{
-					//UE_LOG(LogTemp, Warning, TEXT("spawn from pool, the enemy is dead %s"), *(*temp)->GetName());
-					Enemy->ResetEnemy(element.Key->GetComponentLocation());
-					Pool.Dequeue(*temp);
-					m_spawnedActorsInScene++;
-					return;
-				}	
+				//UE_LOG(LogTemp, Warning, TEXT("spawn from pool, the enemy is dead %s"), *(*temp)->GetName());
+				Enemy->ResetEnemy(TempSpawnPoint->GetComponentLocation());
+				Pool.Dequeue(*temp);
+				m_spawnedActorsInScene++;
+				return;
 			}
 		}
 	}
+
+	
+}
+
+bool AEnemySpawner::CheckOverlap(USceneComponent* SpawnPoint)
+{
+	FVector Center = SpawnPoint->GetComponentLocation();
+	float Radius = 200.f; 
+	TArray<FOverlapResult> Overlaps;
+	FCollisionShape CollisionShape = FCollisionShape::MakeSphere(Radius);
+
+	bool bHasOverlap = GetWorld()->OverlapMultiByObjectType(Overlaps, Center, FQuat::Identity, QueryParams, CollisionShape);
+
+	return bHasOverlap;
+	
+}
+
+USceneComponent* AEnemySpawner::GetRandomSpawnPoint() const
+{
+	int index = FMath::RandRange(0, 3);
+
+	return SpawnPoints[index];
 }
 
 // Called every frame
-void AEnemySpawner::Tick(float DeltaTime)
+void AEnemySpawner::Tick(float DeltaTime) 
 {
 	Super::Tick(DeltaTime);
 
@@ -177,44 +154,3 @@ void AEnemySpawner::PutEnemyBackInThePool(AActor* enemy)
 	Pool.Enqueue(enemy);
 	m_spawnedActorsInScene--;
 }
-
-void AEnemySpawner::OnEastSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	MSpawnPointsMap[EastSphere] = false;
-}
-
-void AEnemySpawner::OnEastEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	MSpawnPointsMap[EastSphere] = true;
-}
-
-void AEnemySpawner::OnWestSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	MSpawnPointsMap[WestSphere] = false;
-}
-
-void AEnemySpawner::OnWestEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	MSpawnPointsMap[WestSphere] = true;
-}
-
-void AEnemySpawner::OnNorthSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	MSpawnPointsMap[NorthSphere] = false;
-}
-
-void AEnemySpawner::OnNorthEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	MSpawnPointsMap[NorthSphere] = true;
-}
-
-void AEnemySpawner::OnSouthSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	MSpawnPointsMap[SouthSphere] = false;
-}
-
-void AEnemySpawner::OnSouthEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	MSpawnPointsMap[SouthSphere] = true;
-}
-
