@@ -52,7 +52,7 @@ void AMine::Explode()
 		TraceChannel,
 		false,
 		m_gnoredActors,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		m_hits,
 		false
 	);

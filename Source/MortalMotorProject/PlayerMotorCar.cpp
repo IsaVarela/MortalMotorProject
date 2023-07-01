@@ -15,10 +15,9 @@
 
 APlayerMotorCar::APlayerMotorCar() :
 	GoldAmount(0),
-	Level(0)
+	Level(0),
+	bIsInvinisible(false)
 {
-	AGold::s_OnGoldCollected.BindUObject(this, &APlayerMotorCar::HandleGoldCollected);
-
 	//killzone sphere
 	KillZoneCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Kill Zone Sphere"));
 	KillZoneCollisionSphere->SetupAttachment(RootComponent);
@@ -29,7 +28,7 @@ APlayerMotorCar::APlayerMotorCar() :
 void APlayerMotorCar::BeginPlay()
 {
 	Super::BeginPlay();
-
+	AGold::s_OnGoldCollected.BindUObject(this, &APlayerMotorCar::HandleGoldCollected);
 	//create the Widget Ui based of the WidgetObject subclass
 	PlayerUI = CreateWidget<UPlayerUI>(GetWorld(), WidgetObject);
 	//add the created UI to the viewport
@@ -138,6 +137,11 @@ void APlayerMotorCar::Accelerate()
     GetVehicleMovementComponent()->SetThrottleInput(1);
 }
 
+void APlayerMotorCar::ActivateShield(bool state)
+{
+	bIsInvinisible = state;
+}
+
 void APlayerMotorCar::Break()
 {
     GetVehicleMovement()->SetBrakeInput(1);
@@ -150,13 +154,15 @@ void APlayerMotorCar::Steer(float x)
 
 void APlayerMotorCar::Health(float damage)
 {
+	if (bIsInvinisible) { return; }
+
 	PlayerHealth = FMath::Max(0, PlayerHealth - damage);
 
 	if (PlayerUI)
 	{
 		PlayerUI->UpdateHPBar(PlayerHealth / 100);
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("HP: %f"), PlayerHealth));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("HP: %f"), PlayerHealth));
 }
 
 void APlayerMotorCar::Heal(float amount)

@@ -69,8 +69,8 @@ void AMortalMortarGameMode::InitAllCoreSkills()
 	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("FlameThrower"));
 	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("Mines"));
 	
-	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% Speed",true));
-	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% HP",true));
+	m_GenericSkills.Add(MakeShared<FCoreSkill>("Temp Energy Shield",true));
+	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 20 HP",true));
 
 
 	
@@ -201,6 +201,7 @@ void AMortalMortarGameMode::ActivateMines()
 
 void AMortalMortarGameMode::GenericSkillTemp1()
 {
+	m_UpgradeComponent->EnableEnergyShield();
 	DisableSkillUI();
 }
 

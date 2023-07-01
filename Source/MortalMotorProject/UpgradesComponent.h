@@ -32,11 +32,16 @@ private:
 	AFlameThrower* m_FlameThrower; 
 	ATurboBoost* m_TurboBoost; 
 	APlayerMotorCar* m_player;
+	UStaticMeshComponent* m_shieldEnergy;
 
-	float m_healPercent = 0.2f;
+	float m_healPercent;
+	bool bIsShieldActive;
+	UMaterialInstanceDynamic* DynamicMaterial;
+
+	UFUNCTION()
+	void DeactivateShield();
 
 public:	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void EnableMinigun();
@@ -44,4 +49,5 @@ public:
 	void EnableFlameThrower(); 
 	void EnableTurboBoost(); 
 	void EnableGenericHeal();
+	void EnableEnergyShield();
 };

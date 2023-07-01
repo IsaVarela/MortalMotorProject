@@ -26,6 +26,7 @@ public:
 	void Health(float damage);
 	void Heal(float amount);
 	void Accelerate();
+	void ActivateShield(bool state);
 
 	class USpringArmComponent* SpringArm;
 
@@ -40,6 +41,7 @@ private:
 
 	const float MAX_HEALTH = 100.f;
 	float PlayerHealth;
+	bool bIsInvinisible;
 
 	void HandleGoldCollected();
 	void Break();
