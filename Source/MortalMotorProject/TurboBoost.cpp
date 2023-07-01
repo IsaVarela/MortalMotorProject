@@ -76,7 +76,7 @@ void ATurboBoost::Tick(float DeltaTime)
 	if(IsTurboActive)
 	{
 		// change camera position 
-		CameraPosition();
+		CameraPosition(DeltaTime);
 
 		// calculate turbo acceleration 
 		float turboAcceleration = CalculateTurboAcceleration();
@@ -97,18 +97,22 @@ void ATurboBoost::ActivateTurbo()
 	IsTurboActive = true;
 }
 
-void ATurboBoost::CameraPosition()
+void ATurboBoost::CameraPosition(float deltaTime)
 {
 	if (PlayerCar->SpringArm)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CameraPosition Change"));
 		// modify the SocketOffset
 		FVector ModifySocketOffset = FVector(0.f, 0.f, 350.f);
-		PlayerCar->SpringArm->SocketOffset = ModifySocketOffset;
+
+		PlayerCar->SpringArm->SocketOffset = FMath::Lerp(PlayerCar->SpringArm->SocketOffset, ModifySocketOffset, deltaTime * 0.6f);
+		
+		//PlayerCar->SpringArm->SocketOffset = ModifySocketOffset;
 
 		// modify the TargetArmLength 
 		float ModifyTargetArmLength = 400.f;
-		PlayerCar->SpringArm->TargetArmLength = ModifyTargetArmLength;
+		//PlayerCar->SpringArm->TargetArmLength = ModifyTargetArmLength;
+		PlayerCar->SpringArm->TargetArmLength = FMath::Lerp(PlayerCar->SpringArm->TargetArmLength, ModifyTargetArmLength, deltaTime * 0.6f);
 	}
 }
 
@@ -116,9 +120,9 @@ void ATurboBoost::ResetCameraPosition()
 {
 	if (PlayerCar->SpringArm)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CameraPosition Reset"));
-		PlayerCar->SpringArm->SocketOffset = OriginalSocketOffset; 
-		PlayerCar->SpringArm->TargetArmLength = OriginalTargetArmLenght; 
+		/*UE_LOG(LogTemp, Warning, TEXT("CameraPosition Reset"));*/
+		PlayerCar->SpringArm->SocketOffset = OriginalSocketOffset;
+		PlayerCar->SpringArm->TargetArmLength = OriginalTargetArmLenght;
 	}
 }
 

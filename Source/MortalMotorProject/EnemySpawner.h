@@ -20,18 +20,22 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	TMap<USceneComponent*, bool> MSpawnPointsMap;
+	
 	float Timer = 0.f;
 
 	void SpawnEnemy();
 	void BruteForceSpawnEnemies();
 	void SpawnFromPool();
-
+	bool CheckOverlap(USceneComponent* SpawnPoint);
+	USceneComponent* GetRandomSpawnPoint() const;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<AActor>> EnemyPrefabs;
 
+	TArray<USceneComponent*> SpawnPoints;
 	TQueue<AActor*> Pool;
+
+	FCollisionObjectQueryParams QueryParams;
 
 	const int c_MaxSpawnActorsInScene = 15; //should always be same or less then MAX_ACTORS_IN_POOL
 	const int c_MaxActorsInPool = 15;
@@ -40,52 +44,25 @@ private:
 	int m_InitialspawnedActors = 0;
 	bool bMaxSpawnReached;
 
+	UPROPERTY(EditDefaultsOnly)
+		USceneComponent* RootSceneComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+		USceneComponent* NorthSpawnPoint;
+
+	UPROPERTY(EditDefaultsOnly)
+		USceneComponent* EastSpawnPoint;
+
+	UPROPERTY(EditDefaultsOnly)
+		USceneComponent* WestSpawnPoint;
+
+	UPROPERTY(EditDefaultsOnly)
+		USceneComponent* SouthSpawnPoint;
+
 
 public:	
 	virtual void Tick(float DeltaTime) override;
 
 	void PutEnemyBackInThePool(AActor* enemy);
 
-	UPROPERTY(EditDefaultsOnly)
-	USceneComponent* RootSceneComponent;
-
-	UPROPERTY(EditDefaultsOnly)
-	USphereComponent* NorthSphere;
-
-	UPROPERTY(EditDefaultsOnly)
-	USphereComponent* SouthSphere;
-
-	UPROPERTY(EditDefaultsOnly)
-	USphereComponent* WestSphere;
-
-	UPROPERTY(EditDefaultsOnly)
-	USphereComponent* EastSphere;
-
-	//EAST
-	UFUNCTION()
-	void OnEastSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnEastEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	//WEST
-	UFUNCTION()
-	void OnWestSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnWestEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
-	//NORTH
-	UFUNCTION()
-	void OnNorthSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnNorthEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	//SOUTH
-	UFUNCTION()
-	void OnSouthSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnSouthEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

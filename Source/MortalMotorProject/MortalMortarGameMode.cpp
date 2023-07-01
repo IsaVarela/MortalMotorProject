@@ -69,8 +69,8 @@ void AMortalMortarGameMode::InitAllCoreSkills()
 	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("FlameThrower"));
 	m_AllCoreSkills.Add(MakeShared<FCoreSkill>("Mines"));
 	
-	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% Speed",true));
-	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 5% HP",true));
+	m_GenericSkills.Add(MakeShared<FCoreSkill>("Temp Energy Shield",true));
+	m_GenericSkills.Add(MakeShared<FCoreSkill>("Add 20 HP",true));
 
 
 	
@@ -81,7 +81,7 @@ void AMortalMortarGameMode::InitAllCoreSkills()
 	m_AllCoreSkills[3]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::ActivateMines);
 
 	m_GenericSkills[0]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp1);
-	m_GenericSkills[1]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::GenericSkillTemp2);
+	m_GenericSkills[1]->OnSkillActionDelegate.BindUObject(this, &AMortalMortarGameMode::AddGenericHeal);
 }
 
 void AMortalMortarGameMode::IncrementQueueCount()
@@ -201,10 +201,12 @@ void AMortalMortarGameMode::ActivateMines()
 
 void AMortalMortarGameMode::GenericSkillTemp1()
 {
+	m_UpgradeComponent->EnableEnergyShield();
 	DisableSkillUI();
 }
 
-void AMortalMortarGameMode::GenericSkillTemp2()
+void AMortalMortarGameMode::AddGenericHeal()
 {
+	m_UpgradeComponent->EnableGenericHeal();
 	DisableSkillUI();
 }
