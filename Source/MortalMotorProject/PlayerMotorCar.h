@@ -51,9 +51,8 @@ private:
 	void CameraRotation();
 	void PlayerDead();
 
-	UPROPERTY()
-	class UCameraComponent* CameraComponent;
-
+	APlayerController* PlayerController;
+ 
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* KillZoneCollisionSphere;
 
@@ -74,6 +73,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerUI> WidgetObject;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UUserWidget> DeathWidgetClass;
+
+	UUserWidget* DeathWidgetInstance;
 
 	//For killzone cleanup
 	UFUNCTION()

@@ -42,9 +42,8 @@ void APlayerMotorCar::BeginPlay()
 	ScriptDelegate.BindUFunction(this, FName("OnOverlapEnd"));
 	KillZoneCollisionSphere->OnComponentEndOverlap.Add(ScriptDelegate);
 
-	// get camera comp
-	CameraComponent = this->FindComponentByClass<UCameraComponent>();
-	
+	// get player controller
+	PlayerController = GetWorld()->GetFirstPlayerController();
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
@@ -53,15 +52,15 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 
 	CameraRotation();
 
-	if(CameraComponent)
+	if(SpringArm)
 	{
 		if(bIsPlayerDead)
 		{
 			 
-			// Calculate the new rotation based on the desired rotation amount
+			 
 			FRotator NewRotation = SpringArm->GetComponentRotation() + (FRotator(0.0f, 10.0f, 0.0f) * DeltaSeconds);
 
-			// Clamp the pitch and roll rotation values to a specific range
+			// Clamp the pitch and roll rotation 
 			float MinPitch = -90.0f;
 			float MaxPitch = 0.0f;
 			float MinRoll = -45.0f;
@@ -69,9 +68,9 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 			NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch, MinPitch, MaxPitch);
 			NewRotation.Roll = FMath::Clamp(NewRotation.Roll, MinRoll, MaxRoll);
 
-			// Apply the clamped rotation to the spring arm
+		 
 			SpringArm->SetWorldRotation(NewRotation);
-			//SpringArm->AddLocalRotation(FRotator(-5.0f, 10.0f, 0.0f) * DeltaSeconds);
+			 
 		}
 		
 	}
@@ -218,8 +217,20 @@ void APlayerMotorCar::PlayerDead()
 	bIsPlayerDead = true;
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("PLAYER IS KAPUT"));
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
-	//this->CustomTimeDilation = 0.5f;
-	//UGameplayStatics::SetGamePaused(GetWorld(), true);
+	  
+	DeathWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), DeathWidgetClass);
+
+	if (DeathWidgetInstance)
+	{
+		// Add the death widget to the viewport
+		DeathWidgetInstance->AddToViewport();
+	}
+
+	// Disable player input
+ 
+	PlayerController->DisableInput(PlayerController);
+	 
+	PlayerController->SetShowMouseCursor(true);
 }
 
 
