@@ -89,7 +89,7 @@ void AZombieRunner::PostInitializeComponents()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("ERROR Death_Montage02 NOT LOADED"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("ERROR Death_Montage02 NOT LOADED"));
 	}
 
 }
