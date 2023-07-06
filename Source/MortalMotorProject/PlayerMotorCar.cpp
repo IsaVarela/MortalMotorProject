@@ -23,6 +23,7 @@ APlayerMotorCar::APlayerMotorCar() :
 	KillZoneCollisionSphere->SetupAttachment(RootComponent);
 
 	PlayerHealth = MAX_HEALTH;
+
 }
 
 void APlayerMotorCar::BeginPlay()
@@ -40,6 +41,9 @@ void APlayerMotorCar::BeginPlay()
 	FScriptDelegate ScriptDelegate;
 	ScriptDelegate.BindUFunction(this, FName("OnOverlapEnd"));
 	KillZoneCollisionSphere->OnComponentEndOverlap.Add(ScriptDelegate);
+
+	// get player controller
+	PlayerController = GetWorld()->GetFirstPlayerController();
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
@@ -47,6 +51,30 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	CameraRotation();
+
+	if(SpringArm)
+	{
+		if(bIsPlayerDead)
+		{
+			 
+			 
+			FRotator NewRotation = SpringArm->GetComponentRotation() + (FRotator(0.0f, 10.0f, 0.0f) * DeltaSeconds);
+
+			// Clamp the pitch and roll rotation 
+			float MinPitch = -90.0f;
+			float MaxPitch = 0.0f;
+			float MinRoll = -45.0f;
+			float MaxRoll = 45.0f;
+			NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch, MinPitch, MaxPitch);
+			NewRotation.Roll = FMath::Clamp(NewRotation.Roll, MinRoll, MaxRoll);
+
+		 
+			SpringArm->SetWorldRotation(NewRotation);
+			 
+		}
+		
+	}
+ 
 }
 
 void APlayerMotorCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -119,6 +147,7 @@ void APlayerMotorCar::CameraRotation()
     }
 }
 
+ 
 void APlayerMotorCar::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor)
@@ -162,6 +191,11 @@ void APlayerMotorCar::Health(float damage)
 	{
 		PlayerUI->UpdateHPBar(PlayerHealth / 100);
 	}
+
+	if (PlayerHealth == 0)
+	{
+		PlayerDead();
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("HP: %f"), PlayerHealth));
 }
 
@@ -174,9 +208,30 @@ void APlayerMotorCar::Heal(float amount)
 	{
 		PlayerUI->UpdateHPBar(PlayerHealth / 100);
 	}
+
+	
 }
 
+void APlayerMotorCar::PlayerDead()
+{
+	bIsPlayerDead = true;
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("PLAYER IS KAPUT"));
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
+	  
+	DeathWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), DeathWidgetClass);
 
+	if (DeathWidgetInstance)
+	{
+		// Add the death widget to the viewport
+		DeathWidgetInstance->AddToViewport();
+	}
+
+	// Disable player input
+ 
+	PlayerController->DisableInput(PlayerController);
+	 
+	PlayerController->SetShowMouseCursor(true);
+}
 
 
 

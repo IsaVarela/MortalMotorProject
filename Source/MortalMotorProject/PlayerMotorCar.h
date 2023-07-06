@@ -30,6 +30,8 @@ public:
 
 	class USpringArmComponent* SpringArm;
 
+	bool bIsPlayerDead;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -47,7 +49,10 @@ private:
 	void Break();
 	void Steer(float x);	 
 	void CameraRotation();
+	void PlayerDead();
 
+	APlayerController* PlayerController;
+ 
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* KillZoneCollisionSphere;
 
@@ -69,11 +74,16 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerUI> WidgetObject;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UUserWidget> DeathWidgetClass;
+
+	UUserWidget* DeathWidgetInstance;
+
 	//For killzone cleanup
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 		
 
-
+	
 	
 };
