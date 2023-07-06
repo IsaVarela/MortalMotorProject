@@ -30,6 +30,8 @@ public:
 
 	class USpringArmComponent* SpringArm;
 
+	bool bIsPlayerDead;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -47,6 +49,10 @@ private:
 	void Break();
 	void Steer(float x);	 
 	void CameraRotation();
+	void PlayerDead();
+
+	UPROPERTY()
+	class UCameraComponent* CameraComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* KillZoneCollisionSphere;
@@ -74,6 +80,6 @@ private:
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 		
 
-
+	
 	
 };

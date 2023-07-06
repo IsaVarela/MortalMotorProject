@@ -91,7 +91,7 @@ void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float A
                     UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
                     }, 0.3f, false);
 
-               // GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 0000"));
+                GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 0000"));
             }
             else // to play when colliding or receiving punch 
             {

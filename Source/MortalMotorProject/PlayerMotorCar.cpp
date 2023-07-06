@@ -23,6 +23,7 @@ APlayerMotorCar::APlayerMotorCar() :
 	KillZoneCollisionSphere->SetupAttachment(RootComponent);
 
 	PlayerHealth = MAX_HEALTH;
+
 }
 
 void APlayerMotorCar::BeginPlay()
@@ -40,6 +41,10 @@ void APlayerMotorCar::BeginPlay()
 	FScriptDelegate ScriptDelegate;
 	ScriptDelegate.BindUFunction(this, FName("OnOverlapEnd"));
 	KillZoneCollisionSphere->OnComponentEndOverlap.Add(ScriptDelegate);
+
+	// get camera comp
+	CameraComponent = this->FindComponentByClass<UCameraComponent>();
+	
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
@@ -47,6 +52,30 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	CameraRotation();
+
+	if(CameraComponent)
+	{
+		if(bIsPlayerDead)
+		{
+			 
+			// Calculate the new rotation based on the desired rotation amount
+			FRotator NewRotation = SpringArm->GetComponentRotation() + (FRotator(0.0f, 10.0f, 0.0f) * DeltaSeconds);
+
+			// Clamp the pitch and roll rotation values to a specific range
+			float MinPitch = -90.0f;
+			float MaxPitch = 0.0f;
+			float MinRoll = -45.0f;
+			float MaxRoll = 45.0f;
+			NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch, MinPitch, MaxPitch);
+			NewRotation.Roll = FMath::Clamp(NewRotation.Roll, MinRoll, MaxRoll);
+
+			// Apply the clamped rotation to the spring arm
+			SpringArm->SetWorldRotation(NewRotation);
+			//SpringArm->AddLocalRotation(FRotator(-5.0f, 10.0f, 0.0f) * DeltaSeconds);
+		}
+		
+	}
+ 
 }
 
 void APlayerMotorCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -119,6 +148,7 @@ void APlayerMotorCar::CameraRotation()
     }
 }
 
+ 
 void APlayerMotorCar::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor)
@@ -162,6 +192,11 @@ void APlayerMotorCar::Health(float damage)
 	{
 		PlayerUI->UpdateHPBar(PlayerHealth / 100);
 	}
+
+	if (PlayerHealth == 0)
+	{
+		PlayerDead();
+	}
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("HP: %f"), PlayerHealth));
 }
 
@@ -174,9 +209,18 @@ void APlayerMotorCar::Heal(float amount)
 	{
 		PlayerUI->UpdateHPBar(PlayerHealth / 100);
 	}
+
+	
 }
 
-
+void APlayerMotorCar::PlayerDead()
+{
+	bIsPlayerDead = true;
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("PLAYER IS KAPUT"));
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
+	//this->CustomTimeDilation = 0.5f;
+	//UGameplayStatics::SetGamePaused(GetWorld(), true);
+}
 
 
 

@@ -12,11 +12,12 @@ void UEnemyAttackNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	if(MeshComp !=nullptr && MeshComp->GetOwner() != nullptr)
 	{
 		AZombieSmasher* Enemy = Cast<AZombieSmasher>(MeshComp->GetOwner());
+		 
 
 		if (Enemy != nullptr && Enemy->bInAttackCollider)
 		{
 			 
-			FString ActorName = Enemy->GetName();
+			//FString ActorName = Enemy->GetName();
 			/*GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Orange, FString::Printf(TEXT("Actor name: %s"), *ActorName));
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("boolean: %s"), Enemy->bInAttackCollider ? TEXT("True") : TEXT("False")));	*/		 
 			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, TEXT("NOTIFY TRIGGERED ATTACK FUNCTION"));
