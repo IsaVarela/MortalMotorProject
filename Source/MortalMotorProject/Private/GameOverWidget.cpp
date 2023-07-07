@@ -4,6 +4,7 @@
 #include "GameOverWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "MortalMotorProject/PlayerMotorCar.h"
 #include "Kismet/GameplayStatics.h"
 
 int UGameOverWidget::RegularZombieCount = 0;
@@ -14,8 +15,7 @@ UGameOverWidget* UGameOverWidget::Instance = nullptr;
 UGameOverWidget::UGameOverWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	/*RegularZombieCount = 0;
-	SpecialZombieCount = 0;*/
+	 
 	MilesTraveled = 0.0f;
 	TimeSurvived = 0.0f;
 	BestTime = 0.0f;
@@ -24,27 +24,34 @@ UGameOverWidget::UGameOverWidget(const FObjectInitializer& ObjectInitializer)
 
  void UGameOverWidget::IncrementRegularZombieCount()
 {
-	RegularZombieCount++;
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("regular zombie : %i"), RegularZombieCount));
-	
-	if (Instance)
+	if(!APlayerMotorCar::bIsPlayerDead)
 	{
-		Instance->UpdateDisplay();
+		RegularZombieCount++;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("regular zombie : %i"), RegularZombieCount));
+
+		if (Instance)
+		{
+			Instance->UpdateDisplay();
+		}
+
+		FinalZombieCount();
 	}
 	
-	FinalZombieCount();
 }
 
 void UGameOverWidget::IncrementSpecialZombieCount()
 {
-	SpecialZombieCount++;
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Special zombie : %i"), SpecialZombieCount));
-	
-	if (Instance)
+	if (!APlayerMotorCar::bIsPlayerDead)
 	{
-		Instance->UpdateDisplay();
+		SpecialZombieCount++;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Special zombie : %i"), SpecialZombieCount));
+
+		if (Instance)
+		{
+			Instance->UpdateDisplay();
+		}
+		FinalZombieCount();
 	}
-	FinalZombieCount();
 }
 
 void UGameOverWidget::FinalZombieCount()
@@ -93,12 +100,7 @@ void UGameOverWidget::NativeConstruct()
 		QuitBtn->OnClicked.AddDynamic(this, &UGameOverWidget::QuitGame);
 	}
 	 
-
-	/*if (RegularZombieCountText)
-	{
-		RegularZombieCountText->SetText(FText::FromString(FString::Printf(TEXT("%d"), CloneRegularZombieCount)));
-	}*/
-
+	 
 	UpdateDisplay();
 }
 
@@ -109,9 +111,12 @@ void UGameOverWidget::BeginDestroy()
 
 void UGameOverWidget::LoadMainMenu()
 {
+	RegularZombieCount = 0;
+	SpecialZombieCount = 0;
+	APlayerMotorCar::bIsPlayerDead = false;
+	APlayerMotorCar::bResetCamera = true;
 	UGameplayStatics::OpenLevelBySoftObjectPtr(this, LevelRef);
-	/*RegularZombieCount = 0;
-	SpecialZombieCount = 0;*/
+	 
 }
 
 void UGameOverWidget::QuitGame()

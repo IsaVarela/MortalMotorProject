@@ -43,11 +43,12 @@ protected:
 	virtual void BeginDestroy() override;
 
 private:	 
-	
+
 	UPROPERTY(EditDefaultsOnly)
 		TSoftObjectPtr<UWorld> LevelRef;
 	UFUNCTION()
 		void LoadMainMenu();
 	UFUNCTION()
 		void QuitGame();
+
 };

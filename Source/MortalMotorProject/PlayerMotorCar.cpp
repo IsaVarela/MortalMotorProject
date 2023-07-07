@@ -12,6 +12,8 @@
 #include "Components/SphereComponent.h"
 #include "IDamageable.h"
 
+bool APlayerMotorCar::bIsPlayerDead = false;
+bool APlayerMotorCar::bResetCamera = false;
 
 APlayerMotorCar::APlayerMotorCar() :
 	GoldAmount(0),
@@ -44,37 +46,36 @@ void APlayerMotorCar::BeginPlay()
 
 	// get player controller
 	PlayerController = GetWorld()->GetFirstPlayerController();
+
+	CameraDefaultRotation = SpringArm->GetRelativeRotation();
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	CameraRotation();
-
-	if(SpringArm)
+	
+	if (SpringArm && bIsPlayerDead)
 	{
-		if(bIsPlayerDead)
-		{
-			 
-			 
-			FRotator NewRotation = SpringArm->GetComponentRotation() + (FRotator(0.0f, 10.0f, 0.0f) * DeltaSeconds);
 
-			// Clamp the pitch and roll rotation 
-			float MinPitch = -90.0f;
-			float MaxPitch = 0.0f;
-			float MinRoll = -45.0f;
-			float MaxRoll = 45.0f;
-			NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch, MinPitch, MaxPitch);
-			NewRotation.Roll = FMath::Clamp(NewRotation.Roll, MinRoll, MaxRoll);
+		FRotator NewRotation = SpringArm->GetComponentRotation() + (FRotator(0.0f, 10.0f, 0.0f) * DeltaSeconds);
 
-		 
-			SpringArm->SetWorldRotation(NewRotation);
-			 
-		}
-		
+		// Clamp the pitch and roll rotation 
+		float MinPitch = -90.0f;
+		float MaxPitch = 0.0f;
+		float MinRoll = -45.0f;
+		float MaxRoll = 45.0f;
+		NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch, MinPitch, MaxPitch);
+		NewRotation.Roll = FMath::Clamp(NewRotation.Roll, MinRoll, MaxRoll);
+
+		SpringArm->SetWorldRotation(NewRotation);
+
 	}
- 
+	else
+	{
+		CameraRotation();
+	}
+	
 }
 
 void APlayerMotorCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -129,22 +130,26 @@ void APlayerMotorCar::CameraRotation()
     // Get the mouse movement delta from the player's input  
     GetWorld()->GetFirstPlayerController()->GetInputMouseDelta(MouseX, MouseY);
 
+    // Get the current rotation of the SpringArm
+    FRotator CurrentRotation;
+    if (SpringArm)
     {
-        // Get the current rotation of the SpringArm
-		FRotator CurrentRotation;
-		if (SpringArm)
-		{
-			CurrentRotation = SpringArm->GetRelativeRotation();
-		}
-       
-
-        // Update the Z rotation based on the mouse movement  
-        float RotationSpeed = 0.8f;
-        CurrentRotation.Yaw += MouseX * RotationSpeed;
-
-        // Set the new rotation of the SpringArm
-        SpringArm->SetRelativeRotation(CurrentRotation);
+	    CurrentRotation = SpringArm->GetRelativeRotation();
     }
+
+    // Update the Z rotation based on the mouse movement  
+    float RotationSpeed = 0.8f;
+    CurrentRotation.Yaw += MouseX * RotationSpeed;
+
+    // Set the new rotation of the SpringArm
+    SpringArm->SetRelativeRotation(CurrentRotation);
+
+	if(bResetCamera)
+	{
+		SpringArm->SetRelativeRotation(CameraDefaultRotation);
+		bResetCamera = false;
+	}
+	
 }
 
  
@@ -196,6 +201,7 @@ void APlayerMotorCar::Health(float damage)
 	{
 		PlayerDead();
 	}
+	 
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("HP: %f"), PlayerHealth));
 }
 

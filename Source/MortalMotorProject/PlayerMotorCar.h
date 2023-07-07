@@ -30,7 +30,8 @@ public:
 
 	class USpringArmComponent* SpringArm;
 
-	bool bIsPlayerDead;
+	static bool bIsPlayerDead;
+	static bool bResetCamera;
 
 protected:
 	virtual void BeginPlay() override;
@@ -52,6 +53,8 @@ private:
 	void PlayerDead();
 
 	APlayerController* PlayerController;
+
+	FRotator CameraDefaultRotation;
  
 	UPROPERTY(EditDefaultsOnly)
 	class USphereComponent* KillZoneCollisionSphere;
