@@ -27,16 +27,18 @@ UGameOverWidget::UGameOverWidget(const FObjectInitializer& ObjectInitializer)
 	if(!APlayerMotorCar::bIsPlayerDead)
 	{
 		RegularZombieCount++;
+		FinalZombieCount();
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("regular zombie : %i"), RegularZombieCount));
 
 		if (Instance)
 		{
-			Instance->UpdateDisplay();
+			//Instance->UpdateDisplay();
 		}
-
-		FinalZombieCount();
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("SOMETHING WRONG WITH INSTANCE"));
+		}
 	}
-	
 }
 
 void UGameOverWidget::IncrementSpecialZombieCount()
@@ -44,13 +46,19 @@ void UGameOverWidget::IncrementSpecialZombieCount()
 	if (!APlayerMotorCar::bIsPlayerDead)
 	{
 		SpecialZombieCount++;
+		FinalZombieCount();
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Special zombie : %i"), SpecialZombieCount));
 
 		if (Instance)
 		{
-			Instance->UpdateDisplay();
+			
+			//Instance->UpdateDisplay();
 		}
-		FinalZombieCount();
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("SOMETHING WRONG WITH INSTANCE"));
+		}
+		
 	}
 }
 
@@ -111,12 +119,13 @@ void UGameOverWidget::BeginDestroy()
 
 void UGameOverWidget::LoadMainMenu()
 {
-	RegularZombieCount = 0;
-	SpecialZombieCount = 0;
+	RemoveFromParent();
+	UGameplayStatics::OpenLevelBySoftObjectPtr(this, LevelRef);
 	APlayerMotorCar::bIsPlayerDead = false;
 	APlayerMotorCar::bResetCamera = true;
-	UGameplayStatics::OpenLevelBySoftObjectPtr(this, LevelRef);
-	 
+	RegularZombieCount = 0;
+	SpecialZombieCount = 0;
+	TotalZombieCount = 0;
 }
 
 void UGameOverWidget::QuitGame()

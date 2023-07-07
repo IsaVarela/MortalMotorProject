@@ -48,6 +48,8 @@ void APlayerMotorCar::BeginPlay()
 	PlayerController = GetWorld()->GetFirstPlayerController();
 
 	CameraDefaultRotation = SpringArm->GetRelativeRotation();
+
+	
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
@@ -146,8 +148,12 @@ void APlayerMotorCar::CameraRotation()
 
 	if(bResetCamera)
 	{
-		SpringArm->SetRelativeRotation(CameraDefaultRotation);
-		bResetCamera = false;
+		if(SpringArm)
+		{
+			SpringArm->SetRelativeRotation(CameraDefaultRotation);
+			bResetCamera = false;
+		}
+		
 	}
 	
 }
