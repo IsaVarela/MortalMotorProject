@@ -7,7 +7,8 @@
 #include "AIController.h"
 #include "IDamageable.h"
 #include "Sound/SoundCue.h"
-#include "Sound/SoundWave.h" 
+#include "Sound/SoundWave.h"
+#include "GameOverWidget.h"
 #include "ZombieRunner.generated.h"
 
 UCLASS()
@@ -62,6 +63,11 @@ public:
 	UPROPERTY()
 		APawn* Player;
 
+	/*UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+		TSubclassOf<UUserWidget> DeathWidgetClass;
+
+	UGameOverWidget* DeathWidgetInstance;*/
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
 		UParticleSystemComponent* HitParticlesComponent;
 
@@ -92,7 +98,8 @@ public:
 	UPROPERTY()
 		bool bIsBurned;
 
-	bool bIsCollidingWithPlayer; //killed by collision
+		bool bIsCollidingWithPlayer; //killed by collision
+
 
 	
 

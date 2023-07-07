@@ -14,21 +14,38 @@ class MORTALMOTORPROJECT_API UGameOverWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	int SpecialZombie;
-	int RegularZombie;
+public:	
+	 
+	UGameOverWidget(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION(BlueprintCallable, Category = "ZombieCount")
+		static void IncrementRegularZombieCount();
+	UFUNCTION(BlueprintCallable, Category = "ZombieCount")
+		static void IncrementSpecialZombieCount();
+	UFUNCTION(BlueprintCallable, Category = "ZombieCount")
+		static void FinalZombieCount();
+	void UpdateDisplay();
+
+	static int32 RegularZombieCount;  
+	static int32 SpecialZombieCount;
+	static int32 TotalZombieCount;
+	static UGameOverWidget* Instance;
+	 
+
 	float MilesTraveled;
 	float TimeSurvived;
 	float BestTime;
 
+	 
 protected:
+	 
 	virtual void NativeConstruct() override;
 	virtual void BeginDestroy() override;
 
-private:
+private:	 
+	
 	UPROPERTY(EditDefaultsOnly)
 		TSoftObjectPtr<UWorld> LevelRef;
-
 	UFUNCTION()
 		void LoadMainMenu();
 	UFUNCTION()

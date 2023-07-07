@@ -111,6 +111,7 @@ void AZombieRunner::BeginPlay()
 
 	this->GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AZombieRunner::OnOverlapBegin);
 
+	//DeathWidgetInstance = CreateWidget<UGameOverWidget>(GetWorld(), DeathWidgetClass);
 }
 
 // Called every frame
@@ -209,6 +210,12 @@ void AZombieRunner::ChasePlayer(const FVector& TargetLocation) const
  
 void AZombieRunner::Death()
 {
+	if (this->IsA<AZombieRunner>())
+	UGameOverWidget::IncrementRegularZombieCount();
+
+	if (this->IsA<AZombieSmasher>())
+	UGameOverWidget::IncrementSpecialZombieCount();
+
 	DisableCollision();
 
 	//command assigned directly to the character movement component it halts the object regardless of the AIController.  
