@@ -213,6 +213,7 @@ void AZombieRunner::Death()
 	if (this->IsA<AZombieRunner>())
 	UGameOverWidget::IncrementRegularZombieCount();
 
+	 
 	if (this->IsA<AZombieSmasher>())
 	UGameOverWidget::IncrementSpecialZombieCount();
 
