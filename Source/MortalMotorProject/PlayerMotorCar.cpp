@@ -216,7 +216,7 @@ void APlayerMotorCar::PlayerDead()
 {
 	bIsPlayerDead = true;
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("PLAYER IS KAPUT"));
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.15f);
 	  
 	DeathWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), DeathWidgetClass);
 
