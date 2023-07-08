@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "MortalMotorProject/PlayerMotorCar.h"
 #include "GameOverWidget.generated.h"
 
 /**
@@ -24,12 +25,17 @@ public:
 		static void IncrementSpecialZombieCount();
 	UFUNCTION(BlueprintCallable, Category = "ZombieCount")
 		static void FinalZombieCount();
+	
+	
 	void UpdateDisplay();
+
+	 
+		 
 
 	static int32 RegularZombieCount;  
 	static int32 SpecialZombieCount;
 	static int32 TotalZombieCount;
-	static UGameOverWidget* Instance;
+	//static UGameOverWidget* Instance;
 	 
 
 	float MilesTraveled;
@@ -41,6 +47,7 @@ protected:
 	 
 	virtual void NativeConstruct() override;
 	virtual void BeginDestroy() override;
+	 
 
 private:	 
 
@@ -50,5 +57,6 @@ private:
 		void LoadMainMenu();
 	UFUNCTION()
 		void QuitGame();
+	
 
 };

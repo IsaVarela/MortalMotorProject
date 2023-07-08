@@ -33,7 +33,11 @@ void AZombieSmasher::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+    if(Player)
+    {
         ChasePlayer(Player->GetActorLocation());
+    }
+	
     
 }
 

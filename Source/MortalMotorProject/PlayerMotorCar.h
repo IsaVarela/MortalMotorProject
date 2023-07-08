@@ -28,10 +28,17 @@ public:
 	void Accelerate();
 	void ActivateShield(bool state);
 
+	 
+	float GetPlayerAliveTime();
+	FString GetFormattedAliveTime();
+
 	class USpringArmComponent* SpringArm;
 
+	float PlayerStartTime;
 	static bool bIsPlayerDead;
 	static bool bResetCamera;
+	static FString SurvivedTime;
+	static FString BestTime;
 
 protected:
 	virtual void BeginPlay() override;
