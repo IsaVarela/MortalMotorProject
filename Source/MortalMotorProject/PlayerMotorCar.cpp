@@ -12,8 +12,10 @@
 #include "Components/SphereComponent.h"
 #include "IDamageable.h"
 
-bool APlayerMotorCar::bIsPlayerDead = false;
+bool APlayerMotorCar::bIsPlayerDead;
 bool APlayerMotorCar::bResetCamera = false;
+FString APlayerMotorCar::SurvivedTime;
+FString APlayerMotorCar::BestTime;
 
 APlayerMotorCar::APlayerMotorCar() :
 	GoldAmount(0),
@@ -26,6 +28,8 @@ APlayerMotorCar::APlayerMotorCar() :
 
 	PlayerHealth = MAX_HEALTH;
 
+	bIsPlayerDead = false;
+	 
 }
 
 void APlayerMotorCar::BeginPlay()
@@ -49,7 +53,8 @@ void APlayerMotorCar::BeginPlay()
 
 	CameraDefaultRotation = SpringArm->GetRelativeRotation();
 
-	
+	//get start time
+	PlayerStartTime = FPlatformTime::Seconds();
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
@@ -60,7 +65,7 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 	if (SpringArm && bIsPlayerDead)
 	{
 
-		FRotator NewRotation = SpringArm->GetComponentRotation() + (FRotator(0.0f, 10.0f, 0.0f) * DeltaSeconds);
+		FRotator NewRotation = SpringArm->GetComponentRotation() + (FRotator(20.0f, 10.0f, 0.0f) * DeltaSeconds);
 
 		// Clamp the pitch and roll rotation 
 		float MinPitch = -90.0f;
@@ -90,36 +95,40 @@ void APlayerMotorCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAxis("Steer", this, &APlayerMotorCar::Steer);
 }
 
+ 
 //This function increments the gold and aslo retreives the the exp value that 
 //The player should get for it. It increments the level if needed and send the info forward via the delegate
 //To the UI to update the progress bar
 void APlayerMotorCar::HandleGoldCollected()
 {
-	GoldAmount++;
-
-	//Play SFX sound For gold collected
-	
-	if (GoldCollectSoundCue)
+	if (!bIsPlayerDead)
 	{
+		GoldAmount++;
+		//Play SFX sound For gold collected
+		if (GoldCollectSoundCue)
+		{
 		float startTime = FMath::RandRange(0.f, 1.f);
 		UGameplayStatics::PlaySoundAtLocation(this, GoldCollectSoundCue, GetActorLocation(), 1.f, 1.f, startTime);
-	}
+		}
+
+		if (ExpCurveFloat == nullptr) { return; }
+
 	
+		float currentValue = ExpCurveFloat->GetFloatValue(GoldAmount);
+		int levelTemp = Level;
+		Level = FMath::FloorToInt(currentValue);
 
-	if (ExpCurveFloat == nullptr) { return; }
-	float currentValue = ExpCurveFloat->GetFloatValue(GoldAmount);
-	int levelTemp = Level;
-	Level = FMath::FloorToInt(currentValue);
+		//if the player leveled up
+		if (Level > levelTemp)
+		{
+			OnLevelUpDelegate.Broadcast();
+		}
 
-	//if the player leveled up
-	if (Level > levelTemp)
-	{
-		OnLevelUpDelegate.Broadcast();
+		float finalValue = currentValue - Level;
+
+		OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
 	}
 
-	float finalValue = currentValue - Level;
-
-	OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
 }
 
 // this function will allow the player to rotate the camera without re adjusting to a default position
@@ -192,6 +201,31 @@ void APlayerMotorCar::Steer(float x)
     GetVehicleMovement()->SetSteeringInput(x);
 }
 
+float APlayerMotorCar::GetPlayerAliveTime()
+{
+	return FPlatformTime::Seconds() - PlayerStartTime;
+	
+}
+
+FString APlayerMotorCar::GetFormattedAliveTime()
+{
+	float TotalSeconds = GetPlayerAliveTime();
+	int32 Hours = FMath::FloorToInt(TotalSeconds / 3600);
+	int32 Minutes = FMath::FloorToInt((TotalSeconds - (Hours * 3600)) / 60);
+	int32 Seconds = FMath::FloorToInt(TotalSeconds - (Hours * 3600) - (Minutes * 60));
+
+	FString FormattedTime = FString::Printf(TEXT("%02d:%02d:%02d"), Hours, Minutes, Seconds);
+
+	SurvivedTime = FormattedTime;
+
+	if(SurvivedTime >= BestTime)
+	{
+		BestTime = SurvivedTime;
+	}
+
+	return FormattedTime;
+}
+
 void APlayerMotorCar::Health(float damage)
 {
 	if (bIsInvinisible) { return; }
@@ -220,31 +254,32 @@ void APlayerMotorCar::Heal(float amount)
 	{
 		PlayerUI->UpdateHPBar(PlayerHealth / 100);
 	}
-
-	
 }
 
 void APlayerMotorCar::PlayerDead()
 {
-	bIsPlayerDead = true;
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("PLAYER IS KAPUT"));
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.15f);
-	  
-	DeathWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), DeathWidgetClass);
-
-	if (DeathWidgetInstance)
+	if(!bIsPlayerDead)
 	{
-		// Add the death widget to the viewport
-		DeathWidgetInstance->AddToViewport();
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, GetFormattedAliveTime());
+		
+		
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("PLAYER IS KAPUT"));
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.15f);
+
+		DeathWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), DeathWidgetClass);
+
+		if (DeathWidgetInstance)
+		{
+			// Add the death widget to the viewport
+			DeathWidgetInstance->AddToViewport();
+		}
+		// Disable player input
+
+		PlayerController->DisableInput(PlayerController);
+
+		PlayerController->SetShowMouseCursor(true);
+  
+		bIsPlayerDead = true;
 	}
-
-	// Disable player input
- 
-	PlayerController->DisableInput(PlayerController);
-	 
-	PlayerController->SetShowMouseCursor(true);
+	
 }
-
-
-
- 
