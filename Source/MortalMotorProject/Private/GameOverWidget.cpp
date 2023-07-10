@@ -27,7 +27,7 @@ UGameOverWidget::UGameOverWidget(const FObjectInitializer& ObjectInitializer)
 	{
 		RegularZombieCount++;
 		FinalZombieCount();
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("regular zombie : %i"), RegularZombieCount));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("regular zombie : %i"), RegularZombieCount));
  
 	}
 }
@@ -38,7 +38,7 @@ void UGameOverWidget::IncrementSpecialZombieCount()
 	{
 		SpecialZombieCount++;
 		FinalZombieCount();
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Special zombie : %i"), SpecialZombieCount));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Special zombie : %i"), SpecialZombieCount));
  
 	}
 }
@@ -46,7 +46,7 @@ void UGameOverWidget::IncrementSpecialZombieCount()
 void UGameOverWidget::FinalZombieCount()
 {
 	TotalZombieCount = RegularZombieCount + SpecialZombieCount;
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("TOTAL zombie : %i"), TotalZombieCount));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("TOTAL zombie : %i"), TotalZombieCount));
 }
 
 
@@ -58,6 +58,7 @@ void UGameOverWidget::UpdateDisplay()
 	UTextBlock* TotalZombieCountText = Cast<UTextBlock>(GetWidgetFromName(TEXT("MonstersKilled_Text")));
 	UTextBlock* SurvivedTimeCountText = Cast<UTextBlock>(GetWidgetFromName(TEXT("SurvivedTime_Text")));
 	UTextBlock* BestTimeText = Cast<UTextBlock>(GetWidgetFromName(TEXT("BestTime_Text")));
+	UTextBlock* KmTravelledText = Cast<UTextBlock>(GetWidgetFromName(TEXT("DistanceTravelled_Text")));
 
 	if (RegularZombieCountText)
 	{
@@ -76,13 +77,19 @@ void UGameOverWidget::UpdateDisplay()
 
 	if(SurvivedTimeCountText)
 	{
-		SurvivedTimeCountText->SetText(FText::FromString(APlayerMotorCar::SurvivedTime));
+		SurvivedTimeCountText->SetText(FText::FromString(APlayerMotorCar::SurvivedTimeString));
 	}
 
 	if (BestTimeText)
 	{
-		SurvivedTimeCountText->SetText(FText::FromString(APlayerMotorCar::BestTime));
+		BestTimeText->SetText(FText::FromString(APlayerMotorCar::BestTimeString));
 	}
+
+	if (KmTravelledText)
+	{
+		KmTravelledText->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), APlayerMotorCar::TotalDistanceCovered/100000.0f)));
+	}
+	 
 }
 
 void UGameOverWidget::NativeConstruct()
@@ -121,6 +128,7 @@ void UGameOverWidget::LoadMainMenu()
 	RegularZombieCount = 0;
 	SpecialZombieCount = 0;
 	TotalZombieCount = 0;
+	 
 }
 
 void UGameOverWidget::QuitGame()

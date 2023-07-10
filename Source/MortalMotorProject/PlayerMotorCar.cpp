@@ -14,8 +14,11 @@
 
 bool APlayerMotorCar::bIsPlayerDead;
 bool APlayerMotorCar::bResetCamera = false;
-FString APlayerMotorCar::SurvivedTime;
-FString APlayerMotorCar::BestTime;
+float APlayerMotorCar::BestTime;
+float APlayerMotorCar::TotalDistanceCovered;
+FString APlayerMotorCar::SurvivedTimeString;
+FString APlayerMotorCar::BestTimeString;
+//FVector APlayerMotorCar::PrevPos;
 
 APlayerMotorCar::APlayerMotorCar() :
 	GoldAmount(0),
@@ -27,8 +30,10 @@ APlayerMotorCar::APlayerMotorCar() :
 	KillZoneCollisionSphere->SetupAttachment(RootComponent);
 
 	PlayerHealth = MAX_HEALTH;
-
+	//TotalDistanceCovered = 0;
 	bIsPlayerDead = false;
+	//PrevPos = GetActorLocation();
+	
 	 
 }
 
@@ -55,12 +60,16 @@ void APlayerMotorCar::BeginPlay()
 
 	//get start time
 	PlayerStartTime = FPlatformTime::Seconds();
+
+	InitialPos = GetActorLocation();
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+
+	CalculateDistanceTraveled();
 	
 	if (SpringArm && bIsPlayerDead)
 	{
@@ -76,7 +85,6 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 		NewRotation.Roll = FMath::Clamp(NewRotation.Roll, MinRoll, MaxRoll);
 
 		SpringArm->SetWorldRotation(NewRotation);
-
 	}
 	else
 	{
@@ -94,7 +102,6 @@ void APlayerMotorCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Break", IE_Pressed, this, &APlayerMotorCar::Break);
 	PlayerInputComponent->BindAxis("Steer", this, &APlayerMotorCar::Steer);
 }
-
  
 //This function increments the gold and aslo retreives the the exp value that 
 //The player should get for it. It increments the level if needed and send the info forward via the delegate
@@ -166,7 +173,6 @@ void APlayerMotorCar::CameraRotation()
 	}
 	
 }
-
  
 void APlayerMotorCar::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -177,7 +183,6 @@ void APlayerMotorCar::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AAc
 		{
 			Enemy->TakeDamge(1000.f);
 		}
-		
 	}
 }
 
@@ -189,6 +194,33 @@ void APlayerMotorCar::Accelerate()
 void APlayerMotorCar::ActivateShield(bool state)
 {
 	bIsInvinisible = state;
+}
+
+void APlayerMotorCar::CalculateDistanceTraveled()
+{
+	
+	if (!bIsPlayerDead)
+	{
+		FVector CurrentPos = GetActorLocation();
+		static FVector PrevPos = CurrentPos;  // static
+		//PrevPos = CurrentPos;
+
+		float DistanceTraveled = FVector::Dist(PrevPos, CurrentPos);
+		TotalDistanceCovered += DistanceTraveled;
+
+		float DistanceInMeters = TotalDistanceCovered / 100.0f;
+
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%.2f meters"), DistanceInMeters));
+
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, PrevPos.ToString());
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CurrentPos.ToString());
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%f"), TotalDistanceCovered));
+
+		PrevPos = CurrentPos;
+	}
+	 
+ 
+	
 }
 
 void APlayerMotorCar::Break()
@@ -216,13 +248,22 @@ FString APlayerMotorCar::GetFormattedAliveTime()
 
 	FString FormattedTime = FString::Printf(TEXT("%02d:%02d:%02d"), Hours, Minutes, Seconds);
 
-	SurvivedTime = FormattedTime;
+	SurvivedTimeString = FormattedTime;
 
-	if(SurvivedTime >= BestTime)
+	if (TotalSeconds > BestTime)
 	{
-		BestTime = SurvivedTime;
+		BestTime = TotalSeconds;
 	}
 
+	int32 HoursBest = FMath::FloorToInt(BestTime / 3600);
+	int32 MinutesBest = FMath::FloorToInt((BestTime - (Hours * 3600)) / 60);
+	int32 SecondsBest = FMath::FloorToInt(BestTime - (Hours * 3600) - (Minutes * 60));
+
+	FString FormattedBestTime = FString::Printf(TEXT("%02d:%02d:%02d"), HoursBest, MinutesBest, SecondsBest);
+
+	BestTimeString = FormattedBestTime;
+
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("%f"), BestTime));
 	return FormattedTime;
 }
 
@@ -278,7 +319,7 @@ void APlayerMotorCar::PlayerDead()
 		PlayerController->DisableInput(PlayerController);
 
 		PlayerController->SetShowMouseCursor(true);
-  
+	 
 		bIsPlayerDead = true;
 	}
 	
