@@ -210,7 +210,7 @@ void APlayerMotorCar::CalculateDistanceTraveled()
 
 		float DistanceInMeters = TotalDistanceCovered / 100.0f;
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%.2f meters"), DistanceInMeters));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%.2f meters"), DistanceInMeters));
 
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, PrevPos.ToString());
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CurrentPos.ToString());
