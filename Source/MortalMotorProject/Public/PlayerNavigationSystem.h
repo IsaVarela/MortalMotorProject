@@ -7,6 +7,8 @@
 #include "PlayerNavigationSystem.generated.h"
 
 
+class ADeliverTarget;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MORTALMOTORPROJECT_API UPlayerNavigationSystem : public UActorComponent
 {
@@ -22,9 +24,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	class ADeliverTarget* m_Target;
+	ADeliverTarget* m_CurrentTarget;
+	TArray<AActor*> m_AllTargets;
 	UStaticMeshComponent* m_TargetPointingArrow;
 	class UTextRenderComponent* m_DistanceText;
+	
 
 	void FindTarget();
 	void FindArrow();

@@ -26,14 +26,14 @@ void UPlayerNavigationSystem::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (m_Target == nullptr) { return; }
+	if (m_CurrentTarget == nullptr) { return; }
 
 	UpdateArrowRotation();
 	UpdateDistanceText();
 
 }
 
-
+//gets hold of the actual arrow mesh
 void UPlayerNavigationSystem::FindArrow()
 {
 	TArray<UActorComponent*> allActors = GetOwner()->GetComponentsByTag(UStaticMeshComponent::StaticClass(), FName("Target_Arrow"));
@@ -57,6 +57,7 @@ void UPlayerNavigationSystem::FindArrow()
 	}
 }
 
+//gets hold of the text that displays the distance to target
 void UPlayerNavigationSystem::FindDistanceText()
 {
 	TArray<UActorComponent*> allActors = GetOwner()->GetComponentsByTag(UTextRenderComponent::StaticClass(), FName("Distance_Text"));
@@ -83,7 +84,8 @@ void UPlayerNavigationSystem::FindDistanceText()
 
 void UPlayerNavigationSystem::UpdateArrowRotation()
 {
-	FVector direction = (m_Target->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal();
+	if (m_CurrentTarget == nullptr) { return; }
+	FVector direction = (m_CurrentTarget->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal();
 
 	// Calculate the yaw rotation using trigonometry
 	float Yaw = FMath::RadiansToDegrees(FMath::Atan2(direction.Y, direction.X));
@@ -97,7 +99,8 @@ void UPlayerNavigationSystem::UpdateArrowRotation()
 
 void UPlayerNavigationSystem::UpdateDistanceText()
 {
-	double distance = FVector::Dist(m_Target->GetActorLocation(), GetOwner()->GetActorLocation());
+	if (m_CurrentTarget == nullptr) { return; }
+	double distance = FVector::Dist(m_CurrentTarget->GetActorLocation(), GetOwner()->GetActorLocation());
 	distance /= 100;
 	int32 flooredDistance = FMath::FloorToInt32(distance);
 	
@@ -108,24 +111,15 @@ void UPlayerNavigationSystem::UpdateDistanceText()
 
 void UPlayerNavigationSystem::FindTarget()
 {
-	TArray<AActor*> CachedActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Target"), CachedActors);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADeliverTarget::StaticClass(), m_AllTargets);
+	
+	if (m_AllTargets.Num() == 0) { UE_LOG(LogTemp, Warning, TEXT("Found NO TARGET!"));  return; }
 
-	if (CachedActors.Num() > 0)
-	{
-		ADeliverTarget* temp = Cast<ADeliverTarget>(CachedActors[0]);
-		if (temp)
-		{
-			m_Target = temp;
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Wrong cast"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No target found"));
-	}
+	//UE_LOG(LogTemp, Warning, TEXT("Found %d"),m_AllTargets.Num());
+	//Selects a random target to be the main target
+	int randomIndex = FMath::RandRange(0, m_AllTargets.Num() - 1);
+
+	m_CurrentTarget = Cast<ADeliverTarget>(m_AllTargets[randomIndex]);
+	//m_CurrentTarget->ActivateTarget();
 }
 
