@@ -27,6 +27,7 @@ public:
 	void Heal(float amount);
 	void Accelerate();
 	void ActivateShield(bool state);
+	void CalculateDistanceTraveled();
 
 	 
 	float GetPlayerAliveTime();
@@ -35,10 +36,14 @@ public:
 	class USpringArmComponent* SpringArm;
 
 	float PlayerStartTime;
+	FVector InitialPos;
 	static bool bIsPlayerDead;
 	static bool bResetCamera;
-	static FString SurvivedTime;
-	static FString BestTime;
+	static float TotalDistanceCovered;
+	static float BestTime;
+	static FString SurvivedTimeString;
+	static FString BestTimeString;
+	//static FVector PrevPos;
 
 protected:
 	virtual void BeginPlay() override;
