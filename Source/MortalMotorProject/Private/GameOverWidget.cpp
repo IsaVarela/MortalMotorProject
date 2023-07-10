@@ -87,7 +87,7 @@ void UGameOverWidget::UpdateDisplay()
 
 	if (KmTravelledText)
 	{
-		KmTravelledText->SetText(FText::FromString(FString::Printf(TEXT("%.2f"), APlayerMotorCar::TotalDistanceCovered/100000.0f)));
+		KmTravelledText->SetText(FText::FromString(FString::Printf(TEXT("%.2f Km"), APlayerMotorCar::TotalDistanceCovered/100000.0f)));
 	}
 	 
 }
