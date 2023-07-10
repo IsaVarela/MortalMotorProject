@@ -43,7 +43,7 @@ public:
 	static float BestTime;
 	static FString SurvivedTimeString;
 	static FString BestTimeString;
-	//static FVector PrevPos;
+	 FVector PrevPos;
 
 protected:
 	virtual void BeginPlay() override;

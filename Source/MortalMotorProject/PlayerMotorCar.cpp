@@ -32,7 +32,7 @@ APlayerMotorCar::APlayerMotorCar() :
 	PlayerHealth = MAX_HEALTH;
 	//TotalDistanceCovered = 0;
 	bIsPlayerDead = false;
-	//PrevPos = GetActorLocation();
+	
 	
 	 
 }
@@ -62,6 +62,12 @@ void APlayerMotorCar::BeginPlay()
 	PlayerStartTime = FPlatformTime::Seconds();
 
 	InitialPos = GetActorLocation();
+	PrevPos = InitialPos;
+
+
+	/*GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red,  PrevPos.ToString());
+	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red,InitialPos.ToString());
+	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, GetActorLocation().ToString());*/
 }
 
 void APlayerMotorCar::Tick(float DeltaSeconds)
@@ -198,27 +204,29 @@ void APlayerMotorCar::ActivateShield(bool state)
 
 void APlayerMotorCar::CalculateDistanceTraveled()
 {
-	
+	//static FVector PrevPos;
 	if (!bIsPlayerDead)
 	{
 		FVector CurrentPos = GetActorLocation();
-		static FVector PrevPos = CurrentPos;  // static
+		//static FVector PrevPos = CurrentPos;  // static
 		//PrevPos = CurrentPos;
-
+		
 		float DistanceTraveled = FVector::Dist(PrevPos, CurrentPos);
 		TotalDistanceCovered += DistanceTraveled;
 
-		float DistanceInMeters = TotalDistanceCovered / 100.0f;
+		//float DistanceInMeters = TotalDistanceCovered / 100.0f;
 
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%.2f meters"), DistanceInMeters));
 
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, PrevPos.ToString());
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, CurrentPos.ToString());
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%f"), TotalDistanceCovered));
-
 		PrevPos = CurrentPos;
 	}
-	 
+
+	else
+	{
+		TotalDistanceCovered = 0.0f;
+	}
+
+ 
  
 	
 }
