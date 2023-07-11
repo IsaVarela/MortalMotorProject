@@ -23,9 +23,11 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	static void ReachTarget(ADeliverTarget* DeliverTarget);
+
 private:
-	ADeliverTarget* m_CurrentTarget;
-	TArray<AActor*> m_AllTargets;
+	static ADeliverTarget* m_CurrentTarget;
+	static TArray<AActor*> m_AllTargets;
 	UStaticMeshComponent* m_TargetPointingArrow;
 	class UTextRenderComponent* m_DistanceText;
 	
@@ -35,4 +37,5 @@ private:
 	void FindDistanceText();
 	void UpdateArrowRotation();
 	void UpdateDistanceText();
+	
 };
