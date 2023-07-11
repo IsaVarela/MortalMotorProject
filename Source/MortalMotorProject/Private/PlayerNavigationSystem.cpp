@@ -6,6 +6,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextRenderComponent.h"
 
+ADeliverTarget* UPlayerNavigationSystem::m_CurrentTarget;
+TArray<AActor*> UPlayerNavigationSystem::m_AllTargets;
+
 // Sets default values for this component's properties
 UPlayerNavigationSystem::UPlayerNavigationSystem()
 {
@@ -107,6 +110,20 @@ void UPlayerNavigationSystem::UpdateDistanceText()
 	m_DistanceText->SetText(FText::AsNumber(flooredDistance));
 }
 
+void UPlayerNavigationSystem::ReachTarget(ADeliverTarget* DeliverTarget)
+{
+	DeliverTarget->DeactivateTarget();
+
+	//select new target
+	int randomIndex = FMath::RandRange(0, m_AllTargets.Num() - 1);
+	m_CurrentTarget = Cast<ADeliverTarget>(m_AllTargets[randomIndex]);
+
+	m_AllTargets.Add(DeliverTarget);
+	m_AllTargets.Remove(m_CurrentTarget);
+
+	m_CurrentTarget->ActivateTarget();
+}
+
 
 
 void UPlayerNavigationSystem::FindTarget()
@@ -119,7 +136,9 @@ void UPlayerNavigationSystem::FindTarget()
 	//Selects a random target to be the main target
 	int randomIndex = FMath::RandRange(0, m_AllTargets.Num() - 1);
 
+
 	m_CurrentTarget = Cast<ADeliverTarget>(m_AllTargets[randomIndex]);
-	//m_CurrentTarget->ActivateTarget();
+	m_AllTargets.Remove(m_CurrentTarget);
+	m_CurrentTarget->ActivateTarget();
 }
 

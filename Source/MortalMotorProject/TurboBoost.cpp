@@ -101,7 +101,7 @@ void ATurboBoost::CameraPosition(float deltaTime)
 {
 	if (PlayerCar->SpringArm)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CameraPosition Change"));
+		//UE_LOG(LogTemp, Warning, TEXT("CameraPosition Change"));
 		// modify the SocketOffset
 		FVector ModifySocketOffset = FVector(0.f, 0.f, 350.f);
 
