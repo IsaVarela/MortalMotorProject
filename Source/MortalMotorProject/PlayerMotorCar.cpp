@@ -6,7 +6,6 @@
 #include "PlayerUI.h"
 #include "ChaosWheeledVehicleMovementComponent.h" 
 #include "GameFramework/PlayerController.h"
-#include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
@@ -79,7 +78,6 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 	
 	if (SpringArm && bIsPlayerDead)
 	{
-
 		FRotator NewRotation = SpringArm->GetComponentRotation() + (FRotator(20.0f, 10.0f, 0.0f) * DeltaSeconds);
 
 		// Clamp the pitch and roll rotation 
@@ -96,6 +94,8 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 	{
 		CameraRotation();
 	}
+
+	
 	
 }
 

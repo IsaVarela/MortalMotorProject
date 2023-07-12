@@ -16,7 +16,9 @@ class MORTALMOTORPROJECT_API UPlayerUI : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	void UpdateHPBar(float val);
+	void UpdateTimer();
 
 private:
 	class APlayerMotorCar* Player;
