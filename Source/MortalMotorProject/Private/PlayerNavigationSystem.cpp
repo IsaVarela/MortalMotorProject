@@ -5,9 +5,14 @@
 #include "DeliverTarget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextRenderComponent.h"
+#include "MortalMotorProject/PlayerMotorCar.h"
 
 ADeliverTarget* UPlayerNavigationSystem::m_CurrentTarget;
 TArray<AActor*> UPlayerNavigationSystem::m_AllTargets;
+int32 UPlayerNavigationSystem::flooredDistance;
+float UPlayerNavigationSystem::TimeToTarget;
+bool UPlayerNavigationSystem::IsTargetReached;
+FString UPlayerNavigationSystem::FormattedTime;
 
 // Sets default values for this component's properties
 UPlayerNavigationSystem::UPlayerNavigationSystem()
@@ -22,7 +27,7 @@ void UPlayerNavigationSystem::BeginPlay()
 
 	FindTarget();
 	FindArrow();
-	FindDistanceText();
+	FindDistanceText(); 
 }
 
 void UPlayerNavigationSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -33,7 +38,13 @@ void UPlayerNavigationSystem::TickComponent(float DeltaTime, ELevelTick TickType
 
 	UpdateArrowRotation();
 	UpdateDistanceText();
-
+	TimerToTarget(DeltaTime);
+	if(IsTargetReached)
+	{
+		CalculateTimeToTarget();
+		IsTargetReached = false;
+	}
+	 
 }
 
 //gets hold of the actual arrow mesh
@@ -105,9 +116,10 @@ void UPlayerNavigationSystem::UpdateDistanceText()
 	if (m_CurrentTarget == nullptr) { return; }
 	double distance = FVector::Dist(m_CurrentTarget->GetActorLocation(), GetOwner()->GetActorLocation());
 	distance /= 100;
-	int32 flooredDistance = FMath::FloorToInt32(distance);
-	
+	//int32 flooredDistance = FMath::FloorToInt32(distance);
+	flooredDistance = FMath::FloorToInt32(distance);
 	m_DistanceText->SetText(FText::AsNumber(flooredDistance));
+	 
 }
 
 void UPlayerNavigationSystem::ReachTarget(ADeliverTarget* DeliverTarget)
@@ -120,10 +132,44 @@ void UPlayerNavigationSystem::ReachTarget(ADeliverTarget* DeliverTarget)
 
 	m_AllTargets.Add(DeliverTarget);
 	m_AllTargets.Remove(m_CurrentTarget);
-
+	
 	m_CurrentTarget->ActivateTarget();
+
+	IsTargetReached = true;
 }
 
+void UPlayerNavigationSystem::CalculateTimeToTarget()
+{
+	float Speed = (30 * 1000) / 3600;
+	TimeToTarget = flooredDistance / Speed;
+	IsReady = true;
+}
+
+void UPlayerNavigationSystem::TimerToTarget(float DeltaTime)
+{
+ 
+	if (IsReady && TimeToTarget == 0.0f )
+	{
+		APlayerMotorCar* player = Cast<APlayerMotorCar>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+		if (player)
+		{
+			 
+			player->PlayerDead();
+		}
+	}
+	  
+	//TimeToTarget -= DeltaTime;
+	TimeToTarget = FMath::Clamp(TimeToTarget - DeltaTime, 0, TimeToTarget);
+
+	int32 Minutes = FMath::FloorToInt(TimeToTarget / 60);
+	int32 Seconds = FMath::FloorToInt(TimeToTarget - (Minutes * 60));
+
+	//FString FormattedTime = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+	FormattedTime = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FormattedTime);
+
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("%f"), TimeToTarget));
+}
 
 
 void UPlayerNavigationSystem::FindTarget()
@@ -140,5 +186,11 @@ void UPlayerNavigationSystem::FindTarget()
 	m_CurrentTarget = Cast<ADeliverTarget>(m_AllTargets[randomIndex]);
 	m_AllTargets.Remove(m_CurrentTarget);
 	m_CurrentTarget->ActivateTarget();
+
+	
+	float Delay = 0.2f;
+	FTimerHandle TimerHandleCount;
+	GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandleCount);
+	GetOwner()->GetWorldTimerManager().SetTimer(TimerHandleCount, this, &UPlayerNavigationSystem::CalculateTimeToTarget, Delay, false);
 }
 

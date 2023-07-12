@@ -25,12 +25,23 @@ public:
 
 	static void ReachTarget(ADeliverTarget* DeliverTarget);
 
+	void CalculateTimeToTarget();
+
+	void TimerToTarget(float DeltaTime);
+
+	static FString FormattedTime;
+
+	
 private:
+
+	bool IsReady;
+	static bool IsTargetReached;
+	static float TimeToTarget;
 	static ADeliverTarget* m_CurrentTarget;
 	static TArray<AActor*> m_AllTargets;
 	UStaticMeshComponent* m_TargetPointingArrow;
 	class UTextRenderComponent* m_DistanceText;
-	
+	static int32 flooredDistance; //
 
 	void FindTarget();
 	void FindArrow();

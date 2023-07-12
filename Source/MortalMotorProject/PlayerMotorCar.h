@@ -28,7 +28,7 @@ public:
 	void Accelerate();
 	void ActivateShield(bool state);
 	void CalculateDistanceTraveled();
-
+	void PlayerDead();
 	 
 	float GetPlayerAliveTime();
 	FString GetFormattedAliveTime();
@@ -37,13 +37,15 @@ public:
 
 	float PlayerStartTime;
 	FVector InitialPos;
+	FVector PrevPos;
 	static bool bIsPlayerDead;
 	static bool bResetCamera;
 	static float TotalDistanceCovered;
 	static float BestTime;
 	static FString SurvivedTimeString;
 	static FString BestTimeString;
-	 FVector PrevPos;
+	
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -62,7 +64,7 @@ private:
 	void Break();
 	void Steer(float x);	 
 	void CameraRotation();
-	void PlayerDead();
+	
 
 	APlayerController* PlayerController;
 

@@ -100,9 +100,6 @@ public:
 
 		bool bIsCollidingWithPlayer; //killed by collision
 
-
-	
-
 	//These variables were made public and editable to allow more flexibility when changing meshes for the same zombie type
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		UAnimMontage* Hit_Montage01;
@@ -125,6 +122,7 @@ public:
 private:
 
 	void BecomeRagdoll();
+
 	void KillEnemy(); //disables the enemy, hides it and puts it back in the pool
 
 	UPROPERTY(EditDefaultsOnly)
