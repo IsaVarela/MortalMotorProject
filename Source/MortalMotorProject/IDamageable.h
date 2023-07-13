@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "IDamageable.generated.h"
 
+DECLARE_DELEGATE_OneParam(FOnEnemyKilledSignature, int /* goldAmount */)
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UIDamageable : public UInterface
@@ -25,4 +27,7 @@ public:
 	virtual bool IsAlive() const = 0;
 
 	virtual void ResetEnemy(FVector SpawnLocation) = 0;
+
+	//Notifies the player that the enemy is dead
+	static FOnEnemyKilledSignature OnEnemyKilledDelegate;
 };

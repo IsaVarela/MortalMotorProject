@@ -8,12 +8,11 @@
 #include "CollisionQueryParams.h"
 
 
-// Sets default values
 AEnemySpawner::AEnemySpawner()
 	:
-	QueryParams(FCollisionObjectQueryParams())
+	QueryParams(FCollisionObjectQueryParams()),
+	TraceChannel(ECollisionChannel::ECC_Visibility)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root SceneComp"));
@@ -70,7 +69,7 @@ void AEnemySpawner::SpawnEnemy()
 void AEnemySpawner::BruteForceSpawnEnemies()
 {
 	USceneComponent* TempSpawnPoint = GetRandomSpawnPoint();
-	if (!CheckOverlap(TempSpawnPoint))
+	if (!CheckRayHit(TempSpawnPoint))
 	{
 		if (EnemyPrefabs.Num() > 0)
 		{
@@ -90,7 +89,7 @@ void AEnemySpawner::BruteForceSpawnEnemies()
 void AEnemySpawner::SpawnFromPool()
 {
 	USceneComponent* TempSpawnPoint = GetRandomSpawnPoint();
-	if (!CheckOverlap(TempSpawnPoint))
+	if (!CheckRayHit(TempSpawnPoint))
 	{
 		if (EnemyPrefabs.Num() > 0)
 		{
@@ -124,6 +123,17 @@ bool AEnemySpawner::CheckOverlap(USceneComponent* SpawnPoint)
 
 	return bHasOverlap;
 	
+}
+
+bool AEnemySpawner::CheckRayHit(USceneComponent* SpawnPoint)
+{
+	FVector RayDirection = (SpawnPoint->GetComponentLocation() - GetActorLocation()).GetSafeNormal();
+	FHitResult HitResult;
+	FVector EndTraceLocation = (LineTraceDistance * RayDirection) + GetActorLocation();
+
+	bool bhasHit = GetWorld()->LineTraceSingleByChannel(HitResult, GetActorLocation(), EndTraceLocation, TraceChannel);
+
+	return bhasHit;
 }
 
 USceneComponent* AEnemySpawner::GetRandomSpawnPoint() const

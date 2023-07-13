@@ -20,6 +20,7 @@ public:
 	// Sets default values for this character's properties
 	AZombieRunner();
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -62,6 +63,9 @@ public:
 
 	UPROPERTY()
 		APawn* Player;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Reward")
+	int GoldReward = 1;
 
 	/*UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 		TSubclassOf<UUserWidget> DeathWidgetClass;

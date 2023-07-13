@@ -22,15 +22,20 @@ protected:
 private:
 	
 	float Timer = 0.f;
-
 	void SpawnEnemy();
 	void BruteForceSpawnEnemies();
 	void SpawnFromPool();
 	bool CheckOverlap(USceneComponent* SpawnPoint);
+	bool CheckRayHit(USceneComponent* SpawnPoint);
 	USceneComponent* GetRandomSpawnPoint() const;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<AActor>> EnemyPrefabs;
+
+	UPROPERTY(EditDefaultsOnly)
+	float LineTraceDistance = 2000.f;
+
+	ECollisionChannel TraceChannel;
 
 	TArray<USceneComponent*> SpawnPoints;
 	TQueue<AActor*> Pool;

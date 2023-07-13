@@ -61,6 +61,7 @@ private:
 	bool bIsInvinisible;
 
 	void HandleGoldCollected();
+	void HandleRewardCollected(int Reward);
 	void Break();
 	void Steer(float x);	 
 	void CameraRotation();

@@ -40,6 +40,8 @@ void APlayerMotorCar::BeginPlay()
 {
 	Super::BeginPlay();
 	AGold::s_OnGoldCollected.BindUObject(this, &APlayerMotorCar::HandleGoldCollected);
+	IIDamageable::OnEnemyKilledDelegate.BindUObject(this, &APlayerMotorCar::HandleRewardCollected);
+
 	//create the Widget Ui based of the WidgetObject subclass
 	PlayerUI = CreateWidget<UPlayerUI>(GetWorld(), WidgetObject);
 	//add the created UI to the viewport
@@ -142,6 +144,30 @@ void APlayerMotorCar::HandleGoldCollected()
 		OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
 	}
 
+}
+
+void APlayerMotorCar::HandleRewardCollected(int Reward)
+{
+	if (!bIsPlayerDead)
+	{
+		GoldAmount += Reward;
+
+		if (ExpCurveFloat == nullptr) { return; }
+
+		float currentValue = ExpCurveFloat->GetFloatValue(GoldAmount);
+		int levelTemp = Level;
+		Level = FMath::FloorToInt(currentValue);
+
+		//if the player leveled up
+		if (Level > levelTemp)
+		{
+			OnLevelUpDelegate.Broadcast();
+		}
+
+		float finalValue = currentValue - Level;
+
+		OnGoldCollectedDelegate.ExecuteIfBound(finalValue);
+	}
 }
 
 // this function will allow the player to rotate the camera without re adjusting to a default position
