@@ -98,7 +98,7 @@ void UGameOverWidget::NativeConstruct()
 
 	UButton* RetryBtn = Cast<UButton>(GetWidgetFromName(TEXT("Retry_Btn")));
 	UButton* QuitBtn = Cast<UButton>(GetWidgetFromName(TEXT("Quit_Btn")));
-	 
+	
 
 	if (RetryBtn)
 	{

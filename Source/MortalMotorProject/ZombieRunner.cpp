@@ -153,6 +153,8 @@ void AZombieRunner::TakeDamge(float damage)
 	}
 	else
 	{
+		OnEnemyKilledDelegate.ExecuteIfBound(GoldReward);
+
 		Death();
 	}
 }
