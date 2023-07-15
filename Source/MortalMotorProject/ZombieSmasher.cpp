@@ -90,10 +90,13 @@ void AZombieSmasher::AttackPlayer(AActor* OtherActor, float RecoilForce, float A
             if (AnimIndex == 0)
             {
                 FTimerHandle TimerHandle;
-                GetWorldTimerManager().SetTimer(TimerHandle, [this]() {
-                    // Play the sound cue after the delay
-                    UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
-                    }, 0.3f, false);
+                if(this != nullptr && AttackingSound != nullptr){
+                    GetWorldTimerManager().SetTimer(TimerHandle, [this]() {
+                        // Play the sound cue after the delay
+                        UGameplayStatics::PlaySoundAtLocation(this, AttackingSound, GetActorLocation());
+                        }, 0.3f, false);
+                }
+                
 
                 //GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT(" We are on anim 0000"));
             }

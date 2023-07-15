@@ -75,6 +75,7 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	FlipCar();
 
 	CalculateDistanceTraveled();
 	
@@ -205,7 +206,45 @@ void APlayerMotorCar::CameraRotation()
 	}
 	
 }
+
+void APlayerMotorCar::FlipCar()
+{
+	 
+	FVector UpVector = GetActorUpVector();
  
+	FVector CarLocation = GetActorLocation();  
+
+	FVector StartLocation = CarLocation;  
+	FVector EndLocation = CarLocation - FVector(0, 0, 50); 
+
+	FHitResult HitResult; 
+
+	FCollisionQueryParams TraceParams;
+	TraceParams.bTraceComplex = false;  
+	TraceParams.AddIgnoredActor(this);  
+
+	// Perform the line trace
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, TraceParams);
+
+	if ( UpVector.Z < 0 && !bHit)
+	{
+
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Black, TEXT("We are flipped!"));
+		this->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		FVector CurrentPos = GetActorLocation();
+		FVector NewPos = CurrentPos + FVector(0, 0, 150000);
+		FRotator NewRot = FRotator::ZeroRotator;
+
+		this->SetActorRotation(NewRot,ETeleportType::ResetPhysics);
+	}
+
+	else
+	{
+		this->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	
+}
+
 void APlayerMotorCar::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor)

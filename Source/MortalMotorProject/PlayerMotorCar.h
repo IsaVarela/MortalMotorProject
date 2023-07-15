@@ -65,6 +65,7 @@ private:
 	void Break();
 	void Steer(float x);	 
 	void CameraRotation();
+	void FlipCar();
 	
 
 	APlayerController* PlayerController;

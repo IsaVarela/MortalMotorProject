@@ -140,7 +140,7 @@ void UPlayerNavigationSystem::ReachTarget(ADeliverTarget* DeliverTarget)
 
 void UPlayerNavigationSystem::CalculateTimeToTarget()
 {
-	float Speed = (30 * 1000) / 3600;
+	float Speed = (15 * 1000) / 3600;
 	TimeToTarget = flooredDistance / Speed;
 	IsReady = true;
 }
