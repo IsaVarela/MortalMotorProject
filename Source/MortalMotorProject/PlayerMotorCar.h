@@ -44,9 +44,20 @@ public:
 	static float BestTime;
 	static FString SurvivedTimeString;
 	static FString BestTimeString;
-	
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		UAudioComponent* AudioComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		class USoundCue* StartUpCue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		class USoundCue* GearN;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		class USoundCue* Gear1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		class USoundCue* Gear2;
+
+	 
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -59,6 +70,7 @@ private:
 	const float MAX_HEALTH = 100.f;
 	float PlayerHealth;
 	bool bIsInvinisible;
+	bool bPlayerJustSpawn;
 
 	void HandleGoldCollected();
 	void HandleRewardCollected(int Reward);
@@ -66,6 +78,7 @@ private:
 	void Steer(float x);	 
 	void CameraRotation();
 	void FlipCar();
+	void EngineSounds();
 	
 
 	APlayerController* PlayerController;
@@ -85,10 +98,12 @@ private:
 	int Level;
 
 	//SFX
+
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* GoldCollectSoundCue;
  
 	UPlayerUI* PlayerUI;
+
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerUI> WidgetObject;
