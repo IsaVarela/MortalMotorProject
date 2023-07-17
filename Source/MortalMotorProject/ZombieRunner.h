@@ -67,11 +67,6 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "Reward")
 	int GoldReward = 1;
 
-	/*UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-		TSubclassOf<UUserWidget> DeathWidgetClass;
-
-	UGameOverWidget* DeathWidgetInstance;*/
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Particles")
 		UParticleSystemComponent* HitParticlesComponent;
 

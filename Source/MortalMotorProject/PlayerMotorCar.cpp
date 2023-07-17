@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "IDamageable.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
 bool APlayerMotorCar::bIsPlayerDead;
 bool APlayerMotorCar::bResetCamera = false;
@@ -17,7 +19,7 @@ float APlayerMotorCar::BestTime;
 float APlayerMotorCar::TotalDistanceCovered;
 FString APlayerMotorCar::SurvivedTimeString;
 FString APlayerMotorCar::BestTimeString;
-//FVector APlayerMotorCar::PrevPos;
+ 
 
 APlayerMotorCar::APlayerMotorCar() :
 	GoldAmount(0),
@@ -31,7 +33,12 @@ APlayerMotorCar::APlayerMotorCar() :
 	PlayerHealth = MAX_HEALTH;
 	//TotalDistanceCovered = 0;
 	bIsPlayerDead = false;
-	
+	bPlayerJustSpawn = true;
+
+	//sfx
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(GetRootComponent());
+	AudioComponent->bAutoActivate = false;
 	
 	 
 }
@@ -65,6 +72,11 @@ void APlayerMotorCar::BeginPlay()
 	InitialPos = GetActorLocation();
 	PrevPos = InitialPos;
 
+	// sfx
+	if (AudioComponent && StartUpCue)
+	{
+		AudioComponent->SetSound(StartUpCue);
+	}
 
 	/*GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red,  PrevPos.ToString());
 	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red,InitialPos.ToString());
@@ -78,6 +90,8 @@ void APlayerMotorCar::Tick(float DeltaSeconds)
 	FlipCar();
 
 	CalculateDistanceTraveled();
+
+	EngineSounds();
 	
 	if (SpringArm && bIsPlayerDead)
 	{
@@ -243,6 +257,63 @@ void APlayerMotorCar::FlipCar()
 		this->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}
 	
+}
+
+void APlayerMotorCar::EngineSounds()
+{
+	if (AudioComponent)
+	{
+		int32 index;
+		int32 thottleInput = GetVehicleMovementComponent()->GetThrottleInput();
+		int32 speed = GetVehicleMovementComponent()->GetForwardSpeedMPH() * 1.60934;
+
+		if (thottleInput == 0 && speed < 30)
+			index = 1;
+
+		if (thottleInput == 0 && speed > 30)
+			index = 3;
+
+		if (thottleInput == 1)
+			index = 2;
+
+		if (thottleInput == 1 && speed > 50)
+			index = 3;
+
+		if (GetVehicleMovement()->GetBrakeInput() == 1 && speed > 10)
+			index = 4;
+
+	 
+
+		 
+
+
+		/*if (speed == 0 && bPlayerJustSpawn)
+		{
+			index = 0;
+			bPlayerJustSpawn = false;
+		}
+
+		if (speed < 20 && GetVehicleMovementComponent()->GetThrottleInput() == 0)
+			index = 1;
+			
+
+		if (speed > 0 && GetVehicleMovementComponent()->GetThrottleInput() == 1 && speed < 40)
+			index = 2;
+
+		if (speed > 40 || speed > 20 && GetVehicleMovementComponent()->GetThrottleInput() == 0)
+			index = 3;*/
+
+		AudioComponent->SetIntParameter("indexCue", index);
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%i"), index));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%i"), thottleInput));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%s"), AudioComponent->IsPlaying() ? TEXT("true") : TEXT("false")));
+		
+		if (!AudioComponent->IsPlaying())
+		{
+			AudioComponent->Play();
+		}
+		 
+	}
 }
 
 void APlayerMotorCar::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
