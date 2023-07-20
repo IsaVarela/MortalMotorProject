@@ -218,6 +218,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		UArrowComponent* ArrowComp; 
 
+	UPROPERTY(EditDefaultsOnly, Category = "SFX")
+		UAudioComponent* AudioComp; 
+
 public:
 
 	UPROPERTY(EditAnywhere, Category = TurboCar, meta = (UIMin = "0.1", UIMax = "2", ClampMin = "0.1", ClampMap = "10"))

@@ -304,9 +304,9 @@ void APlayerMotorCar::EngineSounds()
 			index = 3;*/
 
 		AudioComponent->SetIntParameter("indexCue", index);
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%i"), index));
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%i"), thottleInput));
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%s"), AudioComponent->IsPlaying() ? TEXT("true") : TEXT("false")));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%i"), index));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%i"), thottleInput));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("%s"), AudioComponent->IsPlaying() ? TEXT("true") : TEXT("false")));
 		
 		if (!AudioComponent->IsPlaying())
 		{
