@@ -5,6 +5,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "Components/AudioComponent.h"
 #include "ChaosVehicleMovementComponent.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "PlayerMotorCar.h"
@@ -31,6 +32,10 @@ ATurboBoost::ATurboBoost() :
 	TurboLeftComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TurboLeft"));
 	TurboLeftComp->bAutoActivate = false;
 	TurboLeftComp->SetupAttachment(ArrowComp);
+
+	//SFX 
+	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("TurboSFX")); 
+	AudioComp->bAutoActivate = false; 
 
 	MaxTurboDuration = 5.f;
 	TurboAcceleration = 2000.f;
@@ -136,7 +141,7 @@ void ATurboBoost::DeactivateTurbo()
 	// revert vehicles acceleration to its original value 
 	//ModifyMaxAcceleration(
 		
-	PlayerCar->GetVehicleMovementComponent()->SetThrottleInput(1); 
+	PlayerCar->GetVehicleMovementComponent()->SetThrottleInput(0); 
 
 	Control.ThrottleInput = Control.RawThrottleInput; 
 
@@ -144,6 +149,9 @@ void ATurboBoost::DeactivateTurbo()
 	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Niagara"));
 	TurboRightComp->Deactivate();
 	TurboLeftComp->Deactivate();
+
+	//Deactivate SFX
+	AudioComp->Stop(); 
 
 	ResetCameraPosition();
 }
@@ -225,6 +233,12 @@ bool ATurboBoost::SpeedBoost(float amount, float duration, const FVector& direct
 	//UE_LOG(LogTemp, Warning, TEXT("Niagara Active"));
 	TurboRightComp->Activate();
 	TurboLeftComp->Activate();
+
+	//Activate SFX 
+	if (!AudioComp->IsPlaying())
+	{
+		AudioComp->Play(); 
+	}
 
 	PlayerCar->Accelerate();
 

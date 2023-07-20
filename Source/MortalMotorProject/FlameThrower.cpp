@@ -5,6 +5,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "Components/AudioComponent.h"
 #include "MortalMotorProject/IDamageable.h" 
 #include "MortalMotorProject/ZombieRunner.h"
 
@@ -26,6 +27,10 @@ AFlameThrower::AFlameThrower():
 	FireFxComponent->bAutoActivate = false;
 	FireFxComponent->SetupAttachment(FlameThrowerBody);
 
+	// SFX 
+	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("FlameThrowerSFX")); 
+	AudioComp->bAutoActivate = false; 
+
 	//variables 
 	//InRange = true; 
 	TraceParams = FCollisionQueryParams();
@@ -41,7 +46,6 @@ AFlameThrower::AFlameThrower():
 void AFlameThrower::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -132,7 +136,6 @@ void AFlameThrower::ScanTarget()
 	if (bHit)
 	{
 		Target = HitResult.GetActor();
-		
 	}
 }
 
@@ -140,6 +143,11 @@ void AFlameThrower::Fire()
 {
 	if (Target == nullptr)
 		return;
+
+	if (!AudioComp->IsPlaying())
+	{
+		AudioComp->Play(); 
+	}
 
 	IIDamageable* Damage = Cast<IIDamageable>(Target); 
 	FireFxComponent->Activate();
@@ -153,20 +161,19 @@ void AFlameThrower::Fire()
 		{
 			AZombieRunner* Zombie = Cast<AZombieRunner>(Target);
 			Zombie->bIsBurned = true;
-		}
-		
-		
+		}		
 	}
 	if(!Damage->IsAlive())
 	{
 		Target = nullptr;
 		StopFire();
-		ResetRotation();
+		//ResetRotation();
 	}
 }
 
 void AFlameThrower::StopFire()
 {
+	AudioComp->Stop(); 
 	FireFxComponent->Deactivate();
 }
 

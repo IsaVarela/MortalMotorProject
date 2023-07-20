@@ -29,7 +29,7 @@ protected:
 private:
 	class AMortalMortarGameMode* GameMode;
 
-	class UButton* m_Btn1;
+	class UButton* m_Btn1; 
 	class UTextBlock* m_Btn1Text;
 
 	class UButton* m_Btn2;

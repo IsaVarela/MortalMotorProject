@@ -65,6 +65,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "NiagraFx")
 		UNiagaraComponent* FireFxComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = "SFX")
+		UAudioComponent* AudioComp; 
+
 	float m_searchTimer;
 	float m_attackTimer;
 	float const SEARCH_TIME = 2.f;

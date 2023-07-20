@@ -26,13 +26,20 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetSFX_Volume() const;
 
+	UFUNCTION(BlueprintPure)
+	float GetMusic_Volume() const;
+
 	UFUNCTION(BlueprintCallable)
 	void SetMasterVolume(float value);
 
 	UFUNCTION(BlueprintCallable)
 	void SetSFX_Volume(float value);
+
+	UFUNCTION(BlueprintCallable)
+		void SetMusic_Volume(float value); 
 	
 private:
 	float m_masterVolume;
 	float m_sfxVolume;
+	float m_musicVolume; 
 };
