@@ -36,7 +36,7 @@ public:
 	void SetSFX_Volume(float value);
 
 	UFUNCTION(BlueprintCallable)
-		void SetMusic_Volume(float value); 
+	void SetMusic_Volume(float value); 
 	
 private:
 	float m_masterVolume;
