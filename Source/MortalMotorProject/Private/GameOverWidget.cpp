@@ -133,6 +133,6 @@ void UGameOverWidget::LoadMainMenu()
 
 void UGameOverWidget::QuitGame()
 {
-	//FGenericPlatformMisc::RequestExit(false);
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("QUIT HAS BEEN PRESSED"));
+	FGenericPlatformMisc::RequestExit(false);
+	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("QUIT HAS BEEN PRESSED"));
 }
